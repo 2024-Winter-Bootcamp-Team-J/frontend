@@ -1,0 +1,4 @@
+{
+    "editor.formatOnSave": true,                     // 저장 시 자동 포맷팅
+    "editor.defaultFormatter": "esbenp.prettier-vscode" // Prettier를 기본 포맷터로 설정
+  }
