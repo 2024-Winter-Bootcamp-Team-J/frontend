@@ -1,12 +1,12 @@
-import React from 'react';
-import StartingPage from '../src/Pages/StartingPage';
+import React from 'react'
+import OnboardingPage from './Pages/Onboarding'
 
 const App: React.FC = () => {
   return (
     <div>
-      <StartingPage />
+      <OnboardingPage />
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
