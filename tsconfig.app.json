@@ -20,7 +20,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* Add these options */
+    "typeRoots": ["./node_modules/@types"], // 타입 정의 파일 경로
+    "types": ["d3"] // D3.js 타입 포함
   },
   "include": ["src"]
 }
