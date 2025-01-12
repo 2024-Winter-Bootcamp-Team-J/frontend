@@ -1,37 +1,54 @@
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import Log from '../../components/SideMenuComponents/Log'
 
-const SideMenuBar: React.FC = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false) // 사이드바 상태
+type SideMenuBarProps = {
+  isCollapsed: boolean
+  setIsCollapsed: Dispatch<SetStateAction<boolean>>
+}
+
+const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate()
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      {/* 메뉴바 */}
-      <motion.div
-        initial={{ x: 0 }}
-        animate={{ x: isCollapsed ? -250 : 0 }} // 사이드바 애니메이션
-        transition={{ duration: 0.3 }} // 애니메이션 속도
-        className="flex flex-col w-64 h-full text-white bg-blue-500 shadow-lg"
-      >
-        <h2 className="p-4 text-xl font-bold">사이드 메뉴</h2>
-        <div className="p-4 space-y-2">
-          <button onClick={() => navigate('/')} className="w-full text-left">
-            온보딩
-          </button>
-          <li>메뉴 2</li>
-          <li>메뉴 3</li>
-        </div>
-      </motion.div>
+    <div className="fixed flex items-center justify-start h-screen">
+      <AnimatePresence>
+        {!isCollapsed && (
+          <motion.div
+            key="sidebar"
+            initial={{ x: -300 }}
+            animate={{ x: 0 }}
+            exit={{ x: -300 }}
+            transition={{ duration: 0.3 }}
+            className="absolute left-0 z-10 flex flex-col h-full shadow-lg w-[300px] "
+          >
+            <div className="absolute inset-0 border-r-2 bg-customColor/80 backdrop-blur-md border-customColor2"></div>
+            <h2 className="relative z-20 p-4 text-xl font-bold text-white">로고 위치</h2>
+            <div className="z-20 mt-5 mb-4 ml-4 text-3xl text-white">기록</div>
 
-      {/* 토글 버튼 */}
+            <div className="z-40 overflow-y-auto h-[750px] relative ">
+              <Log />
+              <Log />
+              <Log />
+              <Log />
+              <Log />
+            </div>
+
+            <div className="z-20 ml-4 justify-items-start">
+              <button onClick={() => navigate('/')} className="mt-6 text-xl text-white">
+                로그아웃
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <motion.button
         onClick={() => setIsCollapsed(!isCollapsed)}
         initial={{ x: 0 }}
-        animate={{ x: isCollapsed ? -250 : 0 }} // 버튼도 같이 움직임
-        transition={{ duration: 0.3 }} // 메뉴바와 같은 애니메이션 속도
-        className="flex items-center justify-center w-5 h-40 text-white bg-gray-800 rounded-r-lg"
+        animate={{ x: isCollapsed ? 0 : 300 }}
+        transition={{ duration: 0.3 }}
+        className="flex items-center justify-center w-5 h-40 text-white rounded-r-lg cursor-pointer bg-customColor2"
       >
         {isCollapsed ? '>' : '<'}
       </motion.button>

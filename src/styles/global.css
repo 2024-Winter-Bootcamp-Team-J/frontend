@@ -1,0 +1,32 @@
+스크롤바 커스텀
+::-webkit-scrollbar {
+  width: 8px; /* 스크롤바 너비 */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #aeaeae; /* 스크롤바 색상 */
+  border-radius: 8px; /* 스크롤바 둥근 모서리 */
+  border: 2px solid transparent; /* 내부 여백 */
+  background-clip: padding-box; /* 스크롤바 안쪽 여백 */
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent; /* 트랙 배경 투명 */
+}
+
+/* 스크롤바를 겹치게 설정 */
+.scroll-container {
+  position: relative; /* 컨테이너 상대 위치 */
+  overflow: overlay; /* 스크롤바가 콘텐츠 위에 겹치도록 설정 */
+}
+
+/* 스크롤 중 스크롤바 보이기 */
+.scroll-container:hover::-webkit-scrollbar,
+.scroll-container:focus-within::-webkit-scrollbar {
+  opacity: 1; /* 스크롤 중일 때 보이도록 */
+}
+
+.scroll-container::-webkit-scrollbar {
+  opacity: 0; /* 기본 상태에서는 숨김 */
+  transition: opacity 0.3s; /* 전환 효과 */
+}
