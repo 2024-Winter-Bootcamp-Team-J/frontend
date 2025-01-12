@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import OnboardingPage from '../src/Pages/Onboarding'
 import MainPage from '../src/Pages/MainPage'
 import './index.css'
+// import './styles/global.css'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
