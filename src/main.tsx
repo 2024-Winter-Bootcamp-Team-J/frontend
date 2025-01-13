@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import OnboardingPage from '../src/Pages/Onboarding'
-import MainPage from '../src/Pages/MainPage'
+import OnboardingPage from './pages/Onboarding'
+import MainPage from './pages/MainPage'
 import './index.css'
 // import './styles/global.css'
 

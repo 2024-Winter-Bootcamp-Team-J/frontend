@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
-import SideMenuBar from '../Modal/MainPageModal/SideMenu'
+import SideMenuBar from '../modal/MainPageModal/SideMenu'
 import Typing from '../components/MainPageComponents/Typing'
 
 const MainPage: React.FC = () => {

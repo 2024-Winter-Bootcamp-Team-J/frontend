@@ -35,7 +35,7 @@ const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed }
               <Log />
             </div>
 
-            <div className="z-20 ml-4 justify-items-start">
+            <div className="z-20 ml-4 mb-7 justify-items-start">
               <button onClick={() => navigate('/')} className="mt-6 text-xl text-white">
                 로그아웃
               </button>

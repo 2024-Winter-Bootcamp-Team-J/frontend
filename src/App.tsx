@@ -1,6 +1,5 @@
 import React from 'react'
-import OnboardingPage from './Pages/Onboarding'
- 
+import OnboardingPage from './pages/Onboarding'
 
 const App: React.FC = () => {
   return (
