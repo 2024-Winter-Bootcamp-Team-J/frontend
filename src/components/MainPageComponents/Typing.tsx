@@ -8,7 +8,7 @@ const Typing: React.FC<TypingProps> = ({ isSidebarCollapsed }) => {
   const [isFocused, setIsFocused] = useState(false)
 
   return (
-    <div className={`fixed bottom-4 left-0 z-20 px-4 transition-all duration-300 ${isSidebarCollapsed ? 'ml-3 w-[calc(100%-20px)]' : 'ml-72 w-[calc(100%-288px)]'} shadow-md`}>
+    <div className={`fixed bottom-4 left-3 z-20 px-4 transition-all duration-300 ${isSidebarCollapsed ? 'ml-1 w-[calc(100%-20px)]' : 'ml-72 w-[calc(100%-295px)]'} shadow-md`}>
       <input
         type="text"
         placeholder={isFocused ? '' : '만들고 싶은 관계를 정리해 주세요!'}
