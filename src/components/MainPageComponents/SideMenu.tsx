@@ -1,7 +1,9 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import Log from '../SideMenuComponents/Log'
+
+import Log from '../../components/SideMenuComponents/Log'
+
 
 type SideMenuBarProps = {
   isCollapsed: boolean
