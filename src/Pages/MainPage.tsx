@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import dummyData from '../DummyData/Dummy'
-import SideMenuBar from '../modal/MainPageModal/SideMenu'
+import SideMenuBar from '../../src/components/MainPageComponents/SideMenu'
 import Typing from '../components/MainPageComponents/Typing'
 import LocationButton from '../components/MainPageComponents/locationButton'
 import Group from '../components/MainPageComponents/Groups'
