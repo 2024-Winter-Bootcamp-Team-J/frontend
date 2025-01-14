@@ -15,6 +15,7 @@ export default {
           menuButton:'#6C6C6C',
           primary: {
             DEFAULT: "#2bca43",
+
           },
         },
       },
