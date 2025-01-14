@@ -2,10 +2,15 @@ import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import SideMenuBar from '../modal/MainPageModal/SideMenu'
 import Typing from '../components/MainPageComponents/Typing'
+import LocationButton from '../components/MainPageComponents/locationButton'
+import Group from '../components/MainPageComponents/Groups'
+import Search from '../components/MainPageComponents/Search'
+import DummyNod from '../DummyData/DummyNod'
 
 const MainPage: React.FC = () => {
   const canvasRef = useRef<SVGSVGElement | null>(null)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [showDummyNod, setShowDummyNod] = useState(false)
 
   useEffect(() => {
     const renderCanvas = () => {
@@ -22,60 +27,78 @@ const MainPage: React.FC = () => {
             .zoom<SVGSVGElement, unknown>()
             .scaleExtent([0.5, 4])
             .on('zoom', (event) => {
-              g.attr('transform', event.transform)
+              svg.select('g').attr('transform', event.transform)
             }),
         )
         .on('dblclick.zoom', null)
 
-      // Clear previous content
-      svg.selectAll('*').remove()
+      svg.selectAll('g').remove() // 기존 요소 제거
 
-      // 그룹 요소 추가 (모든 그래픽 요소를 포함)
       const g = svg.append('g')
 
-      // 중앙 사각형 추가 (테스트용 요소)
-      const rectWidth = 200
-      const rectHeight = 100
-
+      // D3로 클릭 가능한 박스 생성
       g.append('rect')
-        .attr('x', -rectWidth / 2)
-        .attr('y', -rectHeight / 2)
-        .attr('width', rectWidth)
-        .attr('height', rectHeight)
-        .attr('fill', '#4caf50')
+        .attr('x', 50)
+        .attr('y', 50)
+        .attr('width', 200)
+        .attr('height', 100)
+        .attr('fill', '#FFFFFF')
         .attr('stroke', '#333')
         .attr('stroke-width', 2)
-
-      // 초기 위치 설정 (화면 중앙으로 이동)
-      const initialTransform = d3.zoomIdentity.translate(width / 2, height / 2)
-      svg.call(d3.zoom<SVGSVGElement, unknown>().transform, initialTransform)
-      g.attr('transform', initialTransform.toString())
+        .style('cursor', 'pointer') // 클릭 가능한 스타일
+        .on('click', () => {
+          setShowDummyNod(true) // 클릭 시 DummyNod 표시
+        })
     }
 
     const handleResize = () => {
-      renderCanvas() // 화면 크기 변경 시 캔버스 다시 렌더링
+      renderCanvas()
     }
 
-    renderCanvas() // 초기 렌더링
+    renderCanvas()
     window.addEventListener('resize', handleResize)
 
     return () => {
-      window.removeEventListener('resize', handleResize) // 클린업
+      window.removeEventListener('resize', handleResize)
     }
   }, [])
 
   return (
     <div className="relative w-screen h-screen">
-      {/* SideMenuBar */}
-      <div className="absolute top-0 left-0 z-50">
+      {/* 사이드 메뉴 */}
+      <div className="fixed top-0 left-0 z-50">
         <SideMenuBar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
       </div>
 
-      {/* D3 Canvas */}
+      {/* D3 캔버스 */}
       <svg ref={canvasRef} className="fixed top-0 left-0 z-10"></svg>
 
-      {/* Input Box */}
-      <Typing isSidebarCollapsed={isSidebarCollapsed} />
+      {/* DummyNod 중앙에 렌더링 */}
+      {showDummyNod && (
+        <div className="fixed z-40 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+          <DummyNod
+            onClose={() => setShowDummyNod(false)} 
+          />
+        </div>
+      )}
+
+      {/* 검색창 */}
+      <div className="fixed z-30 top-10 right-10">
+        <Search />
+      </div>
+
+      {/* 그룹 컴포넌트 */}
+      <div className="fixed z-30 top-10 left-10">
+        <Group isCollapsed={isSidebarCollapsed} />
+      </div>
+
+      {/* 위치 버튼 */}
+      <div className={`fixed bottom-28 right-9 z-30 transition-transform`}>
+        <LocationButton />
+      </div>
+
+      {/* 입력창 */}
+      <Typing isCollapsed={isSidebarCollapsed} />
     </div>
   )
 }

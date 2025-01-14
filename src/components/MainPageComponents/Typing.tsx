@@ -1,20 +1,26 @@
 import React, { useState } from 'react'
 
 type TypingProps = {
-  isSidebarCollapsed: boolean
+  isCollapsed: boolean
+  setIsCollapsed?: React.Dispatch<React.SetStateAction<boolean>> // 선택적으로 추가
 }
 
-const Typing: React.FC<TypingProps> = ({ isSidebarCollapsed }) => {
+const Typing: React.FC<TypingProps> = ({ isCollapsed }) => {
   const [isFocused, setIsFocused] = useState(false)
 
   return (
-    <div className={`fixed bottom-4 left-3 z-20 px-4 transition-all duration-300 ${isSidebarCollapsed ? 'ml-1 w-[calc(100%-20px)]' : 'ml-72 w-[calc(100%-295px)]'} shadow-md`}>
+    <div
+      className={`fixed z-20 bottom-6 flex items-center px-4  duration-300`}
+      style={{
+        left: isCollapsed ? '24px' : '320px', // 왼쪽 위치 변경
+        right: '20px', // 오른쪽 위치 고정
+      }}
+    >
+      {isCollapsed && <div className="mr-4 text-xl text-white transition-opacity duration-300">LOGO</div>}
       <input
         type="text"
         placeholder={isFocused ? '' : '만들고 싶은 관계를 정리해 주세요!'}
-        className={`w-full h-12 px-4 text-lg shadow-md rounded-xl transition-all duration-300 ${
-          isFocused ? 'bg-customColor text-white opacity-100 backdrop-blur-none border-none' : 'bg-customColor/70 text-white opacity-80 backdrop-blur-md border-4 border-customColor2'
-        }`}
+        className={`w-full h-12 px-4 text-lg shadow-md rounded-xl  duration-300 bg-customColor/70 text-white backdrop-blur-md border-2 border-customColor2`}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
