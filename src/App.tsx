@@ -1,6 +1,6 @@
 // App.tsx
 import React, { useState } from "react";
-import Login from "./Modal/userModal/Login";
+import Login from "../src/modal/userModal/Register";
 
 const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

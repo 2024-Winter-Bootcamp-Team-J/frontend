@@ -2,14 +2,15 @@ import React, { useState, useEffect, useRef } from 'react'
 
 type GroupProps = {
   isCollapsed: boolean
+  onCategorySelect: (category: string) => void // 새로운 prop 추가
 }
 
-const Group: React.FC<GroupProps> = ({ isCollapsed }) => {
+const Group: React.FC<GroupProps> = ({ isCollapsed, onCategorySelect }) => {
   const [isOpen, setIsOpen] = useState(false)
   const groupRef = useRef<HTMLDivElement>(null) // 참조를 사용해 외부 클릭 감지
 
   // 그룹 항목 데이터
-  const groupItems = ['group 1', 'group 2']
+  const groupItems = ['전체', '가족', '친구', '게임', '지인', '직장'] // "전체" 추가
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
@@ -33,6 +34,11 @@ const Group: React.FC<GroupProps> = ({ isCollapsed }) => {
     }
   }, [])
 
+  const handleItemClick = (category: string) => {
+    onCategorySelect(category) // 선택된 카테고리를 상위 컴포넌트로 전달
+    closeDropdown() // 드롭다운 닫기
+  }
+
   return (
     <div ref={groupRef} className={`fixed transition-all duration-300 w-[300px] ${isCollapsed ? '' : 'ml-[300px]'}`}>
       {!isOpen ? (
@@ -48,12 +54,12 @@ const Group: React.FC<GroupProps> = ({ isCollapsed }) => {
         </button>
       ) : (
         // 드롭다운 상태
-        <div className="bg-gray-800 border-2 rounded-md shadow-lg border-customColor2">
+        <div className="border-2 rounded-md shadow-lg bg-customColor2/70 border-customColor2 backdrop-blur-md">
           {groupItems.map((item, index) => (
             <div
               key={index}
-              className="p-2 text-white cursor-pointer hover:bg-gray-700"
-              onClick={closeDropdown} // 클릭 시 닫기
+              className="p-2 text-white cursor-pointer hover:bg-customColor"
+              onClick={() => handleItemClick(item)} // 선택 시 카테고리 전달
             >
               {item}
             </div>
