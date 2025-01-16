@@ -1,7 +1,8 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import OnboardingPage from './pages/Onboarding'
-import MainPage from './pages/MainPage' // MainPage가 별도로 있을 경우 추가
+import MainPage from './pages/MainPage'
+import Nod from './components/Nods/Nod'
 
 const App: React.FC = () => {
   return (
@@ -9,6 +10,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<OnboardingPage />} />
         <Route path="/main" element={<MainPage />} />
+        <Route path="/Nod" element={<Nod/>}/>
       </Routes>
     </Router>
   )

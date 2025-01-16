@@ -115,6 +115,7 @@ const OnboardingPage: React.FC = () => {
           <button onClick={() => navigate('/main')} className="px-6 py-3 text-white">
             메인페이지
           </button>
+          <button onClick={()=> navigate('/nod')} className='w-auto h-4 text-lg text-white'> 노드 생성</button>
         </div>
       </div>
 
@@ -123,7 +124,7 @@ const OnboardingPage: React.FC = () => {
 
         {/* 이미지 및 텍스트 애니메이션 적용 */}
         <motion.div
-          className="relative h-full bg-center bg-cover transition-all duration-1000"
+          className="relative h-full transition-all duration-1000 bg-center bg-cover"
           style={{
             backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 1) 100%),  
             url(${images[currentImageIndex]})`,
