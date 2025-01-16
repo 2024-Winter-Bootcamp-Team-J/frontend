@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import NodeProp from '../Nods/Node'
+import NodeProp from '../TypingComponents/ProfileName'
 import CategoryBox from './CategorySelection'
 
 type TypingProps = {
