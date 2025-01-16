@@ -1,24 +1,14 @@
 import React from 'react'
 
-type NodeProps = {
-  data: {
-    id: string
-    group: string[]
-    x?: number
-    y?: number
-  }
-  isGroupNode: boolean
-}
+const NodeProp: React.FC = () => {
 
-const Node: React.FC<NodeProps> = ({ data, isGroupNode }) => {
+  
   return (
-    <g transform={`translate(${data.x ?? 0}, ${data.y ?? 0})`}>
-      <circle r={isGroupNode ? 30 : 20} fill={isGroupNode ? '#ff7f0e' : '#69b3a2'} />
-      <text x={isGroupNode ? 35 : 25} y={5} fontSize={12} textAnchor="start" fill="#fff">
-        {isGroupNode ? data.id.replace('Group_', '') : data.id}
-      </text>
-    </g>
+    <div className='flex flex-col items-center justify-center gap-5 mt-10 snap-x'>
+      <div className="rounded-full w-[90px] h-[90px] bg-customColor2"></div>
+      <div className="text-lg text-white ">name</div>
+    </div>
   )
 }
 
-export default Node
+export default NodeProp

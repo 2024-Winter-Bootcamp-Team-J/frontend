@@ -9,6 +9,7 @@ export default {
         dateColor: '#737373',
         menuButton: '#6C6C6C',
         loading: '#464646', // 진한 회색
+        loadingExpand: '#2C2C2E',
         primary: {
           DEFAULT: '#2bca43',
         },
