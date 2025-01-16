@@ -1,3 +1,5 @@
+import UserIcon from '../../src/assets/UserIcon.png' // UserIcon.png 이미지 경로를 import
+
 type DummyItem = {
   profile: string
   name: string
@@ -8,44 +10,44 @@ type DummyItem = {
 
 const dummyData: DummyItem[] = [
   {
-    profile: 'https://via.placeholder.com/50',
+    profile: UserIcon,
     name: 'User',
     memo: '누구누구랑 밥을 먹었다. 맛있었다. 근데 지금도 배가 고프다',
     time: '2025-01-13 10:00',
     category: ['친구'],
   },
   {
-    profile: 'https://via.placeholder.com/50',
+    profile: UserIcon,
     name: '김기수',
-    memo: 'Had a meeting with Jane about project updates.',
+    memo: '누구누구랑 밥을 먹었다. 맛있었다. 근데 지금도 배가 고프다',
     time: '2025-01-13 12:30',
     category: ['친구'],
   },
   {
-    profile: 'https://via.placeholder.com/50',
+    profile: UserIcon,
     name: '김지민',
-    memo: 'Discussed marketing strategies with Alice.',
+    memo: '누구누구랑 밥을 먹었다. 맛있었다. 근데 지금도 배가 고프다',
     time: '2025-01-12 15:00',
     category: ['게임', '친구'],
   },
   {
-    profile: 'https://via.placeholder.com/50',
+    profile: UserIcon,
     name: '이윤서',
-    memo: 'Lunch with Bob at the new Italian restaurant.',
+    memo: '누구누구랑 밥을 먹었다. 맛있었다. 근데 지금도 배가 고프다',
     time: '2025-01-12 13:00',
     category: ['친구'],
   },
   {
-    profile: 'https://via.placeholder.com/50',
+    profile: UserIcon,
     name: '정병권',
-    memo: 'Reviewed the design drafts Emily sent over.',
+    memo: '누구누구랑 밥을 먹었다. 맛있었다. 근데 지금도 배가 고프다',
     time: '2025-01-11 16:45',
     category: ['직장', '친구'],
   },
   {
-    profile: 'https://via.placeholder.com/50',
+    profile: UserIcon,
     name: '최우민',
-    memo: 'Reviewed the design drafts Emily sent over.',
+    memo: '누구누구랑 밥을 먹었다. 맛있었다. 근데 지금도 배가 고프다',
     time: '2025-01-11 16:45',
     category: ['직장', '친구'],
   },
