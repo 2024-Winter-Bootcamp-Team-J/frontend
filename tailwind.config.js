@@ -10,7 +10,8 @@ export default {
         menuButton: '#6C6C6C',
         loading: '#464646', // 진한 회색
         loadingExpand: '#2C2C2E',
-        login:'#1D1D1D',
+        login: '#1D1D1D',
+        nodColor: '#1E1E1E',
         primary: {
           DEFAULT: '#2bca43',
         },
