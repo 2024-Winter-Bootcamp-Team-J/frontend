@@ -112,11 +112,15 @@ const OnboardingPage: React.FC = () => {
 
           {/* 메인 페이지 이동 버튼 */}
 
-          <button onClick={() => navigate('/nod')} className="w-auto h-4 text-lg text-white">
-            {' '}
-            노드 생성
+          <button onClick={() => { console.log('메인 페이지 이동 버튼 클릭됨'); navigate('/main'); }} className="px-6 py-3 text-white">
+            메인페이지
+
           </button>
+         
+          <button onClick={()=> navigate('/nod')} className='w-auto h-4 text-lg text-white'> 노드 생성</button>
+
         </div>
+
       </div>
 
       {/* 오른쪽 섹션 */}
