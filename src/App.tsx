@@ -1,8 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import OnboardingPage from './pages/Onboarding'
-import MainPage from './pages/MainPage'
-import Nod from './components/Nods/Nod'
+import OnboardingPage from './Pages/Onboarding'
+import MainPage from './Pages/MainPage'
 
 const App: React.FC = () => {
   return (
@@ -10,7 +9,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<OnboardingPage />} />
         <Route path="/main" element={<MainPage />} />
-        <Route path="/Nod" element={<Nod/>}/>
+        
       </Routes>
     </Router>
   )
