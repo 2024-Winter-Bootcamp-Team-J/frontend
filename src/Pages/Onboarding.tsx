@@ -1,8 +1,8 @@
-// OnboardingPage.tsx
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Login from '../modal/userModal/Login'
 import Register from '../modal/userModal/Register'
+import Logo from '../assets/Logo.png'
 
 import OnboardingImage1 from '../assets/온보딩1.png'
 import OnboardingImage2 from '../assets/온보딩2.png'
@@ -21,7 +21,7 @@ const OnboardingPage: React.FC = () => {
     {
       image: OnboardingImage1,
       title: '글을 타이핑하는 것만으로 관계도를 자동 형성',
-      
+
       description: '\n이름과 간단한 메모를 입력하면, 자동으로 관계도가 생성됩니다.\n기억하고 싶은 사람들을 잊지 않고 기록하세요.',
     },
     {
@@ -43,7 +43,7 @@ const OnboardingPage: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   // 현재 애니메이션 방향 관리
-  const [fadeDirection, setFadeDirection] = useState('in') 
+  const [fadeDirection, setFadeDirection] = useState('in')
 
   // 이미지 배열
   const images = [OnboardingImage1, OnboardingImage2, OnboardingImage3]
@@ -58,7 +58,6 @@ const OnboardingPage: React.FC = () => {
   const closeRegisterModal = () => setIsRegisterModalOpen(false)
 
   useEffect(() => {
-
     document.body.style.overflow = 'hidden'
 
     const interval = setInterval(() => {
@@ -91,7 +90,7 @@ const OnboardingPage: React.FC = () => {
       <div className="flex flex-col justify-center items-center w-[550px] bg-black">
         {/* 로고 */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white">로고</h1>
+          <img src={Logo} alt="Logo" className="w-40 h-20"></img>
         </div>
         {/* 버튼 섹션 */}
         <div className="flex flex-col items-center gap-4">
@@ -112,19 +111,20 @@ const OnboardingPage: React.FC = () => {
           </div>
 
           {/* 메인 페이지 이동 버튼 */}
+
           <button onClick={() => { console.log('메인 페이지 이동 버튼 클릭됨'); navigate('/main'); }} className="px-6 py-3 text-white">
             메인페이지
 
           </button>
          
           <button onClick={()=> navigate('/nod')} className='w-auto h-4 text-lg text-white'> 노드 생성</button>
+
         </div>
 
       </div>
 
       {/* 오른쪽 섹션 */}
       <div className="relative w-full">
-
         {/* 이미지 및 텍스트 애니메이션 적용 */}
         <motion.div
           className="relative h-full transition-all duration-1000 bg-center bg-cover"

@@ -10,6 +10,7 @@ export default {
         menuButton: '#6C6C6C',
         loading: '#464646', // 진한 회색
         loadingExpand: '#2C2C2E',
+        login:'#1D1D1D',
         primary: {
           DEFAULT: '#2bca43',
         },
