@@ -21,7 +21,6 @@ const OnboardingPage: React.FC = () => {
     {
       image: OnboardingImage1,
       title: '글을 타이핑하는 것만으로 관계도를 자동 형성',
-
       description: '\n이름과 간단한 메모를 입력하면, 자동으로 관계도가 생성됩니다.\n기억하고 싶은 사람들을 잊지 않고 기록하세요.',
     },
     {
@@ -78,19 +77,25 @@ const OnboardingPage: React.FC = () => {
 
   const currentSlide = slides[currentSlideIndex]
 
-  // 애니메이션 variants 정의
-  const fadeVariants = {
-    in: { opacity: 1 },
-    out: { opacity: 0.5 },
+  // 이미지 애니메이션 variants 정의
+  const imageVariants = {
+    in: { opacity: 1, scale: 1 },
+    out: { opacity: 0, scale: 0.95 },
+  }
+
+  // 텍스트 애니메이션 variants 정의
+  const textVariants = {
+    in: { opacity: 1, x: 0 },
+    out: { opacity: 0, x: -50 },
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-black">
       {/* 왼쪽 섹션 */}
-      <div className="flex flex-col justify-center items-center w-[550px] bg-black">
+      <div className="flex flex-col justify-center items-center w-[550px] shadow-xl bg-black">
         {/* 로고 */}
         <div className="mb-8">
-          <img src={Logo} alt="Logo" className="w-40 h-20"></img>
+          <img src={Logo} alt="Logo" className="w-40 h-20" />
         </div>
         {/* 버튼 섹션 */}
         <div className="flex flex-col items-center gap-4">
@@ -112,8 +117,10 @@ const OnboardingPage: React.FC = () => {
 
           {/* 메인 페이지 이동 버튼 */}
 
+
           <button onClick={() => { console.log('메인 페이지 이동 버튼 클릭됨'); navigate('/main'); }} className="px-6 py-3 text-white">
             메인페이지
+
 
           </button>
          
@@ -125,27 +132,27 @@ const OnboardingPage: React.FC = () => {
 
       {/* 오른쪽 섹션 */}
       <div className="relative w-full">
-        {/* 이미지 및 텍스트 애니메이션 적용 */}
+        {/* 이미지 애니메이션 */}
         <motion.div
           className="relative h-full transition-all duration-1000 bg-center bg-cover"
           style={{
-            backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 1) 100%),  
+            backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.9) 70%, rgba(0, 0, 0, 1) 100%),  
             url(${images[currentImageIndex]})`,
           }}
           initial="out"
           animate={fadeDirection}
-          variants={fadeVariants}
-          transition={{ duration: 0.5 }} // 애니메이션 지속 시간
+          variants={imageVariants}
+          transition={{ duration: 0.5 }}
         ></motion.div>
 
-        {/* 아래쪽 섹션 + 텍스트 애니메이션 적용 */}
+        {/* 아래쪽 섹션 + 텍스트 애니메이션 */}
         <motion.div
-          className="absolute bottom-0 left-0 h-[230px] w-full flex flex-col items-start justify-center z-10"
+          className="absolute bottom-0 left-0 h-[230px] w-full flex flex-col items-start justify-center z-10 mb-8"
           style={{ paddingLeft: '50px' }}
           initial="out"
           animate={fadeDirection}
-          variants={fadeVariants}
-          transition={{ duration: 0.5 }} // 애니메이션 지속 시간
+          variants={textVariants}
+          transition={{ duration: 0.5 }}
         >
           <h2 className="mb-2 text-5xl text-white">{currentSlide.title}</h2>
           <h1 className="text-xl text-white" style={{ whiteSpace: 'pre-line' }}>

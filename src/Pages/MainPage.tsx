@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { motion } from 'framer-motion'
 import SideMenuBar from '../components/MainPageComponents/SideMenu'
 import Group from '../components/MainPageComponents/Groups'
 import Search from '../components/MainPageComponents/Search'
@@ -14,7 +15,7 @@ const MainPage: React.FC = () => {
   }
 
   return (
-    <div className="relative w-screen h-screen">
+    <motion.div className="relative w-screen h-screen" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
       <div className="fixed top-0 left-0 z-40">
         <SideMenuBar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} logs={logs} />
       </div>
@@ -32,7 +33,7 @@ const MainPage: React.FC = () => {
       </div>
 
       <Typing isCollapsed={isCollapsed} addLog={addLog} />
-    </div>
+    </motion.div>
   )
 }
 
