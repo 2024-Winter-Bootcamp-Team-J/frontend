@@ -14,7 +14,7 @@ const dummyData: DummyItem[] = [
     name: 'User',
     memo: '누구누구랑 밥을 먹었다. 맛있었다. 근데 지금도 배가 고프다',
     time: '2025-01-13 10:00',
-    category: ['친구'],
+    category: [''],
   },
   {
     profile: UserIcon,

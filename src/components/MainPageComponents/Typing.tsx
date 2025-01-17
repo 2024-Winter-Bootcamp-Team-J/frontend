@@ -55,7 +55,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
           <div className="mb-4 max-w-[700px] w-full">
             {showFirstBox && (
               <div className="p-6 ml-auto mr-auto text-white transform border-2 rounded-t-lg shadow-md bg-loadingExpand/60 backdrop-blur-md border-recordColor/70">
-                <div className="text-3xl">관계를 생성중입니다!</div>
+                <div className="text-3xl">관계를 생성 중입니다!</div>
                 <div className="mt-2 text-md">{displayText}</div>
               </div>
             )}

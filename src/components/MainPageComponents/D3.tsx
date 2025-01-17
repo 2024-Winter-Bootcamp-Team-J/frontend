@@ -38,13 +38,13 @@ const D3Canvas: React.FC = () => {
 
     svg.call(zoomBehavior)
 
-    const categoryColors: Record<string, string> = {
-      친구: '#FF5733',
-      지인: '#5733FF',
-      게임: '#FFA500',
-      가족: '#800080',
-      직장: '#33FF57',
-    }
+    // const categoryColors: Record<string, string> = {
+    //   친구: '#FF5733',
+    //   지인: '#5733FF',
+    //   게임: '#FFA500',
+    //   가족: '#800080',
+    //   직장: '#33FF57',
+    // }
 
     // User 노드 데이터
     const userNodeData = dummyData.find((item) => item.name === 'User')
@@ -52,12 +52,12 @@ const D3Canvas: React.FC = () => {
       console.error('User 데이터가 누락되었습니다.')
       return
     }
-
+    const storedProfileImage = localStorage.getItem('profileImage') // 로컬스토리지에서 이미지 가져오기
     // "User" 노드 생성
     const userNode: D3Node = {
       id: userNodeData.name,
       group: userNodeData.category,
-      profile: userNodeData.profile,
+      profile: storedProfileImage || userNodeData.profile,
       fx: canvasWidth / 2, // X 위치 고정
       fy: canvasHeight / 2, // Y 위치 고정
     }
@@ -104,9 +104,9 @@ const D3Canvas: React.FC = () => {
         d3
           .forceLink<D3Node, Link>(links)
           .id((d) => d.id)
-          .distance(600),
+          .distance(300),
       )
-      .force('charge', d3.forceManyBody().strength(-500))
+      .force('charge', d3.forceManyBody().strength(-1700))
       .force('center', d3.forceCenter(canvasWidth / 2, canvasHeight / 2))
       .on('tick', () => {
         g.selectAll<SVGLineElement, Link>('.link')
@@ -122,25 +122,21 @@ const D3Canvas: React.FC = () => {
       .data(links)
       .join('line')
       .attr('class', 'link')
-      .attr('stroke', (d) => {
-        // 링크의 source 노드를 찾음
-        const sourceNode = nodes.find((node) => node.id === (d.source as D3Node).id)
-        const targetNode = nodes.find((node) => node.id === (d.target as D3Node).id)
+      .attr('stroke', (_d) => {
+        // const sourceNode = nodes.find((node) => node.id === (d.source as D3Node).id)
+        // const targetNode = nodes.find((node) => node.id === (d.target as D3Node).id)
 
-        // User와 카테고리 간 링크 색상 설정
-        if (sourceNode?.id === 'User') {
-          // targetNode가 카테고리라면 해당 카테고리의 색상 사용
-          if (targetNode && targetNode.group.length > 0) {
-            return categoryColors[targetNode.group[0]] || '#999'
-          }
-        }
+        // if (sourceNode?.id === 'User') {
+        //   if (targetNode && targetNode.group.length > 0) {
+        //     return categoryColors[targetNode.group[0]] || '#999'
+        //   }
+        // }
 
-        // 일반 링크 색상 설정
-        if (sourceNode && sourceNode.group.length > 0) {
-          return categoryColors[sourceNode.group[0]] || '#999'
-        }
+        // if (sourceNode && sourceNode.group.length > 0) {
+        //   return categoryColors[sourceNode.group[0]] || '#999'
+        // }
 
-        return '#999' // 기본 색상
+        return '#037EC8'
       })
       .attr('stroke-width', 1.5)
       .attr('opacity', 0.8)
@@ -152,45 +148,37 @@ const D3Canvas: React.FC = () => {
       const currentNode = d3.select<SVGGElement, D3Node>(this)
 
       if (d.id === 'User') {
-        // User 노드 스타일
         currentNode.append('circle').attr('r', 80).attr('fill', '#3A3A3A').attr('stroke', '#FFFFFF').attr('stroke-width', 4)
 
         currentNode.append('text').text(d.id).attr('y', 150).attr('text-anchor', 'middle').attr('font-size', '30px').attr('font-weight', 'bold').attr('fill', '#fff')
+      } else if (categories.includes(d.id)) {
+        // 그룹 노드 색상 적용
+        currentNode
+          .append('circle')
+          .attr('r', 70)
+          // .attr('fill', categoryColors[d.id])
+          .attr('stroke', '#037EC8')
+          .attr('stroke-width', 2)
+          .attr('fill', '#037EC8')
+
+        currentNode.append('text').text(d.id).attr('y', 100).attr('text-anchor', 'middle').attr('font-size', '30px').attr('fill', '#fff')
       } else {
-        // 일반 노드 스타일 (이미지 포함)
-        currentNode.append('circle').attr('r', 60).attr('fill', '#444444').attr('stroke', '#6C6C6C').attr('stroke-width', 2)
+        currentNode.append('circle').attr('r', 60).attr('fill', '#037EC8')
 
         if (d.profile) {
-          // 프로필 이미지 추가
-          currentNode
-            .append('clipPath') // 이미지를 둥글게 자르기 위한 클립 경로
-            .attr('id', `clip-${d.id}`)
-            .append('circle')
-            .attr('r', 50)
-            .attr('cx', 0)
-            .attr('cy', 0)
+          currentNode.append('clipPath').attr('id', `clip-${d.id}`).append('circle').attr('r', 50).attr('cx', 0).attr('cy', 0)
 
-          currentNode
-            .append('image')
-            .attr('href', d.profile) // DummyData에서 제공된 프로필 URL
-            .attr('width', 170) // 이미지 크기
-            .attr('height', 170)
-            .attr('x', -85) // 이미지 중심 정렬
-            .attr('y', -85)
-            .attr('clip-path', `url(#clip-${d.id})`) // 클립 경로 적용
+          currentNode.append('image').attr('href', d.profile).attr('width', 170).attr('height', 170).attr('x', -85).attr('y', -85).attr('clip-path', `url(#clip-${d.id})`)
         } else {
-          // 프로필 없는 경우 기본 원형 노드
-          currentNode.append('circle').attr('r', 50).attr('fill', '#69b3a2')
+          currentNode.append('circle').attr('r', 50).attr('fill', '#037EC8')
         }
 
-        // 노드 이름 추가
         currentNode.append('text').text(d.id).attr('y', 100).attr('text-anchor', 'middle').attr('font-size', '30px').attr('fill', '#fff')
       }
     })
 
     simulationRef.current = simulation
 
-    // 초기 줌/팬 설정
     svg.call(zoomBehavior.transform, d3.zoomIdentity.translate(window.innerWidth / 2 - canvasWidth / 2, window.innerHeight / 2 - canvasHeight / 2).scale(1))
 
     function dragstarted(event: d3.D3DragEvent<SVGGElement, D3Node, D3Node>, node: D3Node) {
