@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react'
+import ProfileCard from '../../components/TypingComponents/UserNodeProfileFriend'
+
+
 
 interface NodProps {
   node: {
@@ -43,10 +46,13 @@ const UserNod: React.FC<NodProps> = ({ node, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
-      <div className={`relative rounded-[30px] flex flex-col items-center py-4 px-10 transition-all duration-300 ${isExpanded ? 'w-[500px] h-[700px] bg-nodColor' : 'w-screen h-screen rounded-none'}`}>
+      <div
+        className={`relative rounded-[30px] flex flex-col py-4 px-10 transition-all duration-300 overflow-hidden ${isExpanded ? 'w-[500px] h-[700px] bg-nodColor' : 'w-screen h-screen rounded-none'}`}
+        style={{ maxHeight: isExpanded ? '700px' : '100vh' }}
+      >
         {/* 닫기 버튼 */}
-        <button onClick={handleClose} className="absolute p-2 text-2xl text-white rounded-full top-4 right-8" aria-label="Close">
-          X
+        <button onClick={handleClose} className="absolute p-4 text-2xl text-white rounded-full top-4 right-6" aria-label="Close">
+          <img src="/src/assets/CloseButton.png" alt="Close" className="w-8 h-8" />
         </button>
 
         {/* 확대 버튼 (축소 상태에서만 표시) */}
@@ -63,43 +69,36 @@ const UserNod: React.FC<NodProps> = ({ node, onClose }) => {
           </button>
         )}
 
-        <div className="flex flex-col items-center w-full">
-          <div className="flex flex-col ">
+        <div className="flex flex-col items-center w-full h-full">
+          <div className="flex flex-col items-center w-full mb-4">
             {/* 상단 프로필 */}
-            <div className="flex flex-col items-center w-full mb-4">
-              {/* 프로필 사진 영역 */}
-              <div className="flex items-center justify-center w-32 h-32 overflow-hidden bg-gray-300 rounded-full">
-                {node.profile ? <img src={node.profile} alt={`${node.id} Profile`} /> : <div className="text-white">No Image</div>}
-              </div>
-
-              {/* 이름 */}
-              <h2 className="mt-4 text-2xl font-bold text-white">{node.id}</h2>
+            <div className="flex items-center justify-center bg-gray-300 rounded-full h-36 oveflow-hidden w-36">
+              {node.profile ? <img src={node.profile} alt={`${node.id} Profile`} /> : <div className="text-white">No Image</div>}
             </div>
 
-            {/* 수정 버튼 */}
+            {/* 이름 */}
+            <h2 className="mt-4 text-2xl font-bold text-white">{node.id}</h2>
           </div>
 
           {/* 모달 하단 영역 */}
-          <div className="flex flex-col w-full ">
+          <div className="flex flex-col flex-grow w-full">
             {/* 메모 공간 (축소 상태일 때만 표시) */}
             {isExpanded && (
-              <div className="w-full ">
-                <div className="justify-start mb-10 text-3xl font-semibold text-white border-b-2 border-white">연관 인물</div>
+              <div className="flex-grow w-full">
+                <div className="justify-start mb-10 text-3xl text-white border-b-2 border-white">연관 인물</div>
 
-                <div className="flex flex-col items-center justify-center w-auto h-auto">
-                  <div className="flex flex-col items-start justify-center w-20 h-20 gap-4 mb-4 bg-gray-500 rounded-full"></div>
-                  <div className="text-lg text-white">이름</div>
+                <div className="flex flex-wrap gap-4 overflow-y-scroll" style={{ maxHeight: '350px' }}>
+                  <ProfileCard isExpanded={false} />
                 </div>
               </div>
             )}
 
             {/* 작성 글 공간 (확대 상태일 때만 표시) */}
             {!isExpanded && (
-              <div className="w-full ">
-                <div className="justify-start mb-10 text-lg font-semibold text-white border-b-2 border-white">연관 인물</div>
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-20 h-20 mb-4 bg-gray-500 rounded-full"></div>
-                  <div className="text-lg text-white">이름</div>
+              <div className="flex-grow w-full ">
+                <div className="justify-start mb-10 text-lg text-white border-b-2 border-white">연관 인물</div>
+                <div className="flex flex-wrap gap-4">
+                  <ProfileCard isExpanded={true} />
                 </div>
               </div>
             )}
@@ -111,5 +110,3 @@ const UserNod: React.FC<NodProps> = ({ node, onClose }) => {
 }
 
 export default UserNod
-
-//여기에 모든 유저 id를 받아와서 디비에 등록된 모든 사람을 불러올 생각.
