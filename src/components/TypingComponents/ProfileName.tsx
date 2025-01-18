@@ -9,24 +9,28 @@ const NodeProp: React.FC = () => {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center gap-5 mt-5 snap-x">
-      <div
-        onClick={handleSelect}
-        className={`relative rounded-full w-[90px] h-[90px] bg-customColor2 bg-center bg-cover border-2 border-white cursor-pointer transition-all duration-300 ${isSelected ? 'border-2 border-blue-400' : ''}`}
-        style={{
-          backgroundImage: `url(${UserIcon})`,
-        }}
-      >
-        {/* 후광처럼 빛나는 블러 효과 */}
-        {isSelected && (
-          <div
-            className="absolute inset-0 mx-4 bg-blue-700 rounded-full blur-lg"
-            style={{
-              filter: 'blur(15px)',
-              zIndex: -1, // 블러 효과가 이미지 뒤에 오도록 설정
-            }}
-          />
-        )}
+    <div className="relative flex flex-col items-center justify-center gap-5 mx-4 mt-5 snap-x">
+      <div className="flex items-center justify-center">
+        <div
+          onClick={handleSelect}
+          className={`relative rounded-full w-[90px] h-[90px] bg-customColor2 bg-center bg-cover border-2 border-white cursor-pointer transition-all duration-300 ${isSelected ? 'border-2 border-blue-400' : ''}`}
+          style={{
+            backgroundImage: `url(${UserIcon})`,
+          }}
+        >
+          {/* 후광처럼 빛나는 블러 효과 */}
+          {isSelected && (
+            <div
+              className="absolute -translate-x-1/2 -translate-y-1/2 bg-blue-500 rounded-full top-1/2 left-1/2 blur-lg"
+              style={{
+                width: '100px',
+                height: '100px',
+                filter: 'blur(15px)',
+                zIndex: -1, // 블러 효과가 이미지 뒤에 오도록 설정
+              }}
+            />
+          )}
+        </div>
       </div>
       <div className={`text-lg text-white ${isSelected ? 'text-blue-400' : ''}`}>name</div>
     </div>

@@ -84,8 +84,8 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xl">
       <div className={`relative rounded-[30px] flex flex-col items-center py-4 px-10 transition-all duration-300 ${isExpanded ? 'w-[500px] h-[700px] bg-nodColor' : 'w-screen h-screen rounded-none'}`}>
         {/* 닫기 버튼 */}
-        <button onClick={handleClose} className="absolute p-2 text-2xl text-white rounded-full top-4 right-8" aria-label="Close">
-          X
+        <button onClick={handleClose} className="absolute p-4 text-2xl text-white rounded-full top-4 right-6" aria-label="Close">
+          <img src="/src/assets/CloseButton.png" alt="Close" className='w-8 h-8'/>
         </button>
 
         {/* 확대 버튼 (축소 상태에서만 표시) */}

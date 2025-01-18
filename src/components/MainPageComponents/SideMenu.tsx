@@ -26,15 +26,17 @@ const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed, 
             className="absolute left-0 z-10 flex flex-col h-full shadow-lg w-[300px]"
           >
             <div className="absolute inset-0 border-r-2 bg-customColor/80 backdrop-blur-md border-customColor2"></div>
-            <div className='flex items-center justify-center mt-5'>
-            <img src={Logo} alt={Logo} className='z-50 items-center h-20 w-44'></img>
+            <div className="flex items-center justify-center mt-5">
+              <img src={Logo} alt={Logo} className="z-50 items-center h-20 w-44"></img>
             </div>
             <div className="z-20 mb-3 ml-4 text-2xl text-white mt-7">기록</div>
 
             {/* 로그 출력 */}
             <div className="z-40 overflow-y-auto h-[750px] relative">
               {logs.map((log, index) => (
-                <Log key={index} content={log} />
+                <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.3 }}>
+                  <Log content={log} />
+                </motion.div>
               ))}
             </div>
 

@@ -5,6 +5,7 @@ import Group from '../components/MainPageComponents/Groups'
 import Search from '../components/MainPageComponents/Search'
 import Typing from '../components/MainPageComponents/Typing'
 import D3Canvas from '../components/MainPageComponents/D3'
+import LocationButton from '../components/MainPageComponents/locationButton'
 
 const MainPage: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -12,6 +13,11 @@ const MainPage: React.FC = () => {
 
   const addLog = (log: string) => {
     setLogs((prevLogs) => [...prevLogs, log])
+  }
+
+  const moveToUserNode = () => {
+    console.log('Moving to user node')
+    // Add logic to move to the user node on the D3 canvas
   }
 
   return (
@@ -24,12 +30,16 @@ const MainPage: React.FC = () => {
         <D3Canvas />
       </div>
 
-      <div className="fixed z-30 top-10 right-10">
+      <div className="fixed z-40 top-10 right-10">
         <Search />
       </div>
 
       <div className="fixed z-30 top-10 left-10">
         <Group isCollapsed={isCollapsed} onCategorySelect={(category) => console.log(category)} />
+      </div>
+
+      <div className="fixed z-30 bottom-20 right-10">
+        <LocationButton moveToUserNode={moveToUserNode} />
       </div>
 
       <Typing isCollapsed={isCollapsed} addLog={addLog} />
