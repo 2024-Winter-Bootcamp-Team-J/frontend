@@ -131,6 +131,12 @@ const D3Canvas: React.FC = () => {
           return
         }
 
+        // Prevent interaction with group nodes
+        if (categories.includes(d.id)) {
+          console.log('Group node clicked')
+          return
+        }
+
         console.log('Node clicked:', d)
         setSelectedNode(d) // Open Nod modal for other nodes
       })

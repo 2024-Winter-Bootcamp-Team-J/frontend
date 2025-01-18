@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, {  } from 'react'
 
 type CategoryBoxProps = {
   categories: string[]
@@ -19,7 +19,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategorie
           >
             {category}
           </div>
-          {selectedCategories.includes(category) && <div className="absolute inset-0 bg-blue-700 rounded-full blur-lg" style={{ filter: 'blur(10px)' }} />}
+          {selectedCategories.includes(category) && <div className="absolute inset-0 bg-blue-500 rounded-full blur-sm" style={{ filter: 'blur(7px)' }} />}
         </div>
       ))}
     </div>

@@ -30,7 +30,7 @@ const Search: React.FC = () => {
       <div
         className={`flex items-center h-[44px] transition-all duration-500 ease-in-out border-2 shadow-lg rounded-md border-customColor2 bg-customColor/70 backdrop-blur-md hover:bg-customColor2/70`}
         style={{
-          width: isFocused ? '700px' : '300px', // 좌측으로 길어지게 설정
+          width: isFocused ? '500px' : '300px', // 좌측으로 길어지게 설정
           right: '0px', // 우측 고정
           position: 'absolute', // 위치 고정
         }}
@@ -53,7 +53,7 @@ const Search: React.FC = () => {
             showResults ? 'opacity-100 visible' : 'opacity-0 invisible'
           }`}
           style={{
-            width: isFocused ? '700px' : '300px', // 검색창과 같은 너비
+            width: isFocused ? '500px' : '300px', // 검색창과 같은 너비
             top: '50px', // 검색창 바로 아래로 위치
             right: '0px', // 우측 고정
           }}
@@ -74,7 +74,7 @@ const Search: React.FC = () => {
                 {/* 2번 공간: 메모, 카테고리, 시간 */}
                 <div className="flex-grow pl-4 border-l-2 border-gray-600">
                   <div className="mb-2 text-sm text-gray-400">{item.memo}</div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between pr-3">
                     <div className="flex space-x-2">
                       {/* 다중 카테고리 렌더링 */}
                       {item.category.map((cat, idx) => (

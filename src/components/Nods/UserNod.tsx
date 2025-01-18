@@ -84,7 +84,7 @@ const UserNod: React.FC<NodProps> = ({ node, onClose }) => {
             {/* 메모 공간 (축소 상태일 때만 표시) */}
             {isExpanded && (
               <div className="w-full ">
-                <div className="justify-start mb-10 text-lg font-semibold text-white border-b-2 border-white">연관 인물</div>
+                <div className="justify-start mb-10 text-3xl font-semibold text-white border-b-2 border-white">연관 인물</div>
 
                 <div className="flex flex-col items-center justify-center w-auto h-auto">
                   <div className="flex flex-col items-start justify-center w-20 h-20 gap-4 mb-4 bg-gray-500 rounded-full"></div>
