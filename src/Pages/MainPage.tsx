@@ -7,6 +7,7 @@ import Typing from '../components/MainPageComponents/Typing'
 import D3Canvas from '../components/MainPageComponents/D3'
 import LocationButton from '../components/MainPageComponents/locationButton'
 
+
 const MainPage: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
@@ -38,7 +39,7 @@ const MainPage: React.FC = () => {
         <Group isCollapsed={isCollapsed} onCategorySelect={(category) => console.log(category)} />
       </div>
 
-      <div className="fixed z-30 bottom-20 right-10">
+      <div className="fixed z-30 mb-4 bottom-20 right-10">
         <LocationButton moveToUserNode={moveToUserNode} />
       </div>
 

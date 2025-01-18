@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import dummyData from '../../DummyData/Dummy'
-import Nod from '../../components/Nods/Nod'
-import UserNod from '../../components/Nods/UserNod' // UserNod 컴포넌트 추가
+import Nod from '../../modal/Nods/Nod'
+import UserNod from '../../modal/Nods/UserNod' // UserNod 컴포넌트 추가
 
 type D3Node = d3.SimulationNodeDatum & {
   id: string

@@ -19,6 +19,8 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [displayText, setDisplayText] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]) // 다중 카테고리 선택 상태 관리
   const [animationActive, setAnimationActive] = useState(true)
+  const [isFadingOut, setIsFadingOut] = useState(false)
+  const [isFirstBoxFadingOut, setIsFirstBoxFadingOut] = useState(false)
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
@@ -42,9 +44,15 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   }, [isLoading])
 
   const handleClose = () => {
-    setShowFirstBox(false)
-    setIsExpanded(false)
-    addLog(displayText) // 로그 추가
+    setIsFirstBoxFadingOut(true)
+    setIsFadingOut(true)
+    setTimeout(() => {
+      setShowFirstBox(false)
+      setIsExpanded(false)
+      setIsFadingOut(false)
+      setIsFirstBoxFadingOut(false)
+      addLog(displayText) // 로그 추가
+    }, 500) // Fade-out 애니메이션 시간과 일치
   }
 
   const handleCategorySelect = (category: string) => {
@@ -69,9 +77,8 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
           <div className="mb-4 max-w-[700px] w-full overflow-hidden">
             {showFirstBox && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0 }}
+                animate={isFirstBoxFadingOut ? { opacity: 0 } : { opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 className={`relative p-6 ml-auto mr-auto text-white transform border-2 rounded-t-lg shadow-md bg-loadingExpand/60 backdrop-blur-md border-recordColor/70 overflow-hidden animate-slide-up`}
               >
@@ -108,18 +115,16 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
             )}
             {showFirstBox && isExpanded && (
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isFadingOut ? 0 : 1 }}
                 transition={{ duration: 0.5 }}
                 className={`ml-auto mr-auto overflow-hidden text-white transform border-2 rounded-b-lg shadow-md bg-loadingExpand/60 backdrop-blur-md border-recordColor/70`}
                 style={{
-                  height: isExpanded ? 'auto' : '0px',
-                  paddingTop: isExpanded ? '20px' : '0px',
-                  transition: 'height 1s ease-out, padding-top 1s ease-out',
+                  height: 'auto',
+                  paddingTop: '20px',
                 }}
               >
-                <div className="flex flex-col items-center justify-center mb-6">
+                <motion.div initial={{ opacity: 1 }} animate={{ opacity: isFadingOut ? 0 : 1 }} transition={{ duration: 0.5 }} className="flex flex-col items-center justify-center mb-6">
                   <div className="flex justify-center mt-10 text-3xl text-white">인물</div>
                   <div className="w-full overflow-x-auto snap-center">
                     <div className="flex flex-row items-center justify-center gap-8 ">
@@ -133,7 +138,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                   <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleClose}>
                     확인
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
             )}
           </div>
