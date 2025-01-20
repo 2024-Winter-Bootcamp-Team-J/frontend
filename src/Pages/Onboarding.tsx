@@ -3,6 +3,7 @@ import Login from '../modal/userModal/Login'
 import Register from '../modal/userModal/Register'
 import Logo from '../assets/Logo.png'
 
+
 import OnboardingImage1 from '../assets/온보딩1.png'
 import OnboardingImage2 from '../assets/온보딩2.png'
 import OnboardingImage3 from '../assets/온보딩3.png'
@@ -151,7 +152,7 @@ const OnboardingPage: React.FC = () => {
       {isLoginModalOpen && <Login onClose={closeLoginModal} onOpenRegister={openRegisterModal} />}
 
       {/* 회원가입 모달 */}
-      {isRegisterModalOpen && <Register onClose={closeRegisterModal} />}
+      {isRegisterModalOpen && <Register onClose={closeRegisterModal} openLoginModal={openLoginModal}/>}
     </div>
   )
 }
