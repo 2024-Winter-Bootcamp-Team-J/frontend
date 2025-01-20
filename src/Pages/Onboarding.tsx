@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import Login from '../modal/userModal/Login'
 import Register from '../modal/userModal/Register'
 import Logo from '../assets/Logo.png'
@@ -11,8 +10,6 @@ import OnboardingImage3 from '../assets/온보딩3.png'
 import { motion } from 'framer-motion'
 
 const OnboardingPage: React.FC = () => {
-  const navigate = useNavigate()
-
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
 
