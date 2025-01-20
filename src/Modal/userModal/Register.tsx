@@ -1,15 +1,53 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Logo from '../../assets/logo.png'
+import axios from 'axios'
+
 
 interface RegisterProps {
   onClose: () => void
+  openLoginModal: () => void
 }
 
-const Register: React.FC<RegisterProps> = ({ onClose }) => {
+const Register: React.FC<RegisterProps> = ({ onClose, openLoginModal }) => {
+  const [email, setEmail] = useState('')
+  const [nickname, setNickname] = useState('')
+  const [password, setPassword] = useState('')
+  const [repeatPassword, setRepeatPassword] = useState('')
   const [profileImage, setProfileImage] = useState<string | null>(null)
 
-  // 이미지 업로드 핸들러
+  const handleSignup = async () => {
+    if (password !== repeatPassword) {
+      alert('비밀번호가 일치하지 않습니다.')
+      return
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('nickname', nickname); // 닉네임 추가
+      if (profileImage) {
+        const response = await fetch(profileImage); // base64 데이터를 Blob으로 변환
+        const blob = await response.blob();
+        formData.append('profile_image', blob, 'profile_image.jpg'); // 이미지 추가
+      }
+
+      const response = await axios.post('http://localhost:8000/usersregister', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(response.data)
+      alert('환영합니다, 회원가입에 성공하셨습니다!')
+      onClose()
+      openLoginModal()
+    } catch (error) {
+      console.error('회원가입 중 오류 발생:', error)
+      alert('회원가입에 실패했습니다. 다시 시도해주세요.')
+    }
+  }
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -17,10 +55,7 @@ const Register: React.FC<RegisterProps> = ({ onClose }) => {
       reader.onload = () => {
         const imageBase64 = reader.result as string
         setProfileImage(imageBase64)
-
-        // 로컬 스토리지에 저장
         localStorage.setItem('profileImage', imageBase64)
-        console.log('저장됨')
       }
       reader.readAsDataURL(file)
     }
@@ -50,28 +85,36 @@ const Register: React.FC<RegisterProps> = ({ onClose }) => {
           {/* 왼쪽: 입력 폼 */}
           <div className="flex flex-col items-start w-1/2 gap-4 ml-8">
             {/* 이메일 입력 */}
-            <input type="email" id="email" placeholder="email" className="w-full h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 text-white shadow-inner" />
+            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email" className="w-full h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 text-white shadow-inner" />
+
+            <input
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="name"
+              className="w-full h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 text-white shadow-inner"
+            />
 
             {/* 비밀번호 입력 */}
             <input
-              type="password"
-              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="password"
               className="w-full h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 text-white shadow-inner"
             />
 
             {/* 비밀번호 확인 */}
             <input
-              type="password"
-              id="confirmPassword"
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
               placeholder="repeat password"
               className="w-full h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 text-white shadow-inner"
             />
+            
 
             {/* 회원가입 텍스트 */}
             <span
               className="w-full h-[40px] mt-4 text-center text-white cursor-pointer hover:underline"
-              onClick={onClose} // 회원가입 클릭 시 모달 닫기
+              onClick={handleSignup}
             >
               회원가입
             </span>

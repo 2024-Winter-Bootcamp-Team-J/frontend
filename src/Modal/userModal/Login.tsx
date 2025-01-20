@@ -1,17 +1,54 @@
 import React, { useState } from 'react'
+import axios from 'axios'
+import Cookies from 'js-cookie'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Logo from '../../assets/logo.png'
+
 
 interface LoginProps {
   onClose: () => void
   onOpenRegister: () => void
 }
 
+
 const Login: React.FC<LoginProps> = ({ onClose, onOpenRegister }) => {
   const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isAnimating, setIsAnimating] = useState(false)
   const [isStretched, setIsStretched] = useState(false)
+ 
+
+// 로그인 버튼 클릭 시 호출되는 함수
+const handleLogin = async () => {
+  if (!email || !password) {
+    alert('이메일과 비밀번호를 모두 입력하세요.') // 입력 필드 확인
+    return
+  }
+
+  try {
+    // 로그인 API 호출
+    const response = await axios.post('/api', { email, password })
+
+    // 토큰 저장
+    localStorage.setItem('accessToken', response.data.access)
+    Cookies.set('refreshToken', response.data.refresh)
+
+    alert('로그인 성공!')
+
+    // 애니메이션 트리거
+    setIsAnimating(true)
+    setTimeout(() => {
+      setIsStretched(true)
+      setTimeout(() => navigate('/main'), 2000) // 메인 화면으로 이동
+    }, 2000)
+  } catch (error: any) {
+    console.error('Error:', error)
+    alert('로그인 실패: 이메일 또는 비밀번호를 확인하세요.') // 오류 처리
+  }
+}
+  
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
