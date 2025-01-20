@@ -17,7 +17,8 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [displayText, setDisplayText] = useState('')
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]) // 다중 카테고리 선택 상태 관리
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [categories, setCategories] = useState(['친구', '가족', '게임', '지인', '직장']) // 초기 카테고리
   const [animationActive, setAnimationActive] = useState(true)
   const [isFadingOut, setIsFadingOut] = useState(false)
   const [isFirstBoxFadingOut, setIsFirstBoxFadingOut] = useState(false)
@@ -62,6 +63,12 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
           ? prevCategories.filter((item) => item !== category) // 이미 선택된 카테고리면 제거
           : [...prevCategories, category], // 아니면 추가
     )
+  }
+
+  const handleCategoryAdd = (newCategory: string) => {
+    setCategories((prevCategories) => [...prevCategories, newCategory])
+    setSelectedCategories((prevCategories) => [...prevCategories, newCategory]) // 추가된 카테고리를 선택된 상태로 유지
+    console.log('New category added:', newCategory)
   }
 
   return (
@@ -127,13 +134,13 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                 <motion.div initial={{ opacity: 1 }} animate={{ opacity: isFadingOut ? 0 : 1 }} transition={{ duration: 0.5 }} className="flex flex-col items-center justify-center mb-6">
                   <div className="flex justify-center mt-10 text-3xl text-white">인물</div>
                   <div className="w-full overflow-x-auto snap-center">
-                    <div className="flex flex-row items-center justify-center gap-8 ">
+                    <div className="flex flex-row items-center justify-center gap-8">
                       <NodeProp />
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
                     <div className="mb-4 text-3xl text-white">이름 카테고리 선택</div>
-                    <CategoryBox categories={['친구', '가족', '게임', '지인', '직장']} selectedCategories={selectedCategories} onCategorySelect={handleCategorySelect} />
+                    <CategoryBox categories={categories} selectedCategories={selectedCategories} onCategorySelect={handleCategorySelect} onCategoryAdd={handleCategoryAdd} />
                   </div>
                   <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleClose}>
                     확인
@@ -142,10 +149,8 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
               </motion.div>
             )}
           </div>
-
           <div className="flex flex-row w-full">
             {isCollapsed && <div className="flex items-center mr-6 text-xl text-white transition-opacity duration-300 sarina-regular">Linkin</div>}
-
             <input
               type="text"
               value={inputValue}
