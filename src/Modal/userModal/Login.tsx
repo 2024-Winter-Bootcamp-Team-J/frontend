@@ -29,13 +29,18 @@ const handleLogin = async () => {
 
   try {
     // 로그인 API 호출
-    const response = await axios.post('/api', { email, password })
+    const response = await axios.post('http://localhost:8000/userslogin', { email, password })
 
     // 토큰 저장
-    localStorage.setItem('accessToken', response.data.access)
-    Cookies.set('refreshToken', response.data.refresh)
+    const accessToken = response.data.access
+    const refreshToken = response.data.refresh
+    localStorage.setItem('accessToken', accessToken)
+    Cookies.set('refreshToken', refreshToken)
 
     alert('로그인 성공!')
+
+    // 이후 요청에 Authorization 헤더를 기본 설정으로 추가
+    //axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
 
     // 애니메이션 트리거
     setIsAnimating(true)
@@ -50,14 +55,10 @@ const handleLogin = async () => {
 }
   
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      setIsAnimating(true)
-      setTimeout(() => {
-        setIsStretched(true)
-        setTimeout(() => navigate('/main'), 2000)
-      }, 2000)
-    }
+const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  if (event.key === 'Enter') {
+    handleLogin()
+  }
   }
 
   return (
@@ -85,6 +86,8 @@ const handleLogin = async () => {
                 type="email"
                 id="email"
                 placeholder="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="absolute top-[150px] left-[40px] w-[280px] h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 shadow-inner text-white"
               />
             </div>
@@ -94,6 +97,8 @@ const handleLogin = async () => {
                 type="password"
                 id="password"
                 placeholder="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className="absolute top-[210px] left-[40px] w-[280px] h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 text-white shadow-inner"
               />
