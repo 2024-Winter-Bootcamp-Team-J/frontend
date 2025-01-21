@@ -90,23 +90,23 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
     <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xl transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
       <div className={`relative rounded-[30px] flex flex-col items-center py-4 px-10 transition-all duration-300 ${isExpanded ? 'w-[500px] h-[700px] bg-nodColor' : 'w-screen h-screen rounded-none'}`}>
         {/* 닫기 버튼 */}
-        <button onClick={handleClose} className="absolute p-4 text-2xl text-white rounded-full top-4 right-6" aria-label="Close">
+        <button onClick={handleClose} className="absolute p-4 text-2xl text-white transition-transform duration-300 rounded-full top-4 right-6 hover:scale-125" aria-label="Close">
           <img src="/src/assets/CloseButton.png" alt="Close" className="w-8 h-8" />
         </button>
 
         {/* 확대 / 축소 버튼 */}
         {isExpanded ? (
-          <button onClick={handleExpand} className="absolute p-4 text-white rounded-full top-4 left-6" aria-label="Expand">
+          <button onClick={handleExpand} className="absolute p-4 text-white transition-transform duration-300 rounded-full top-4 left-6 hover:scale-125" aria-label="Expand">
             <img src="/src/assets/확대.png" alt="Expand" className="w-6 h-6" />
           </button>
         ) : (
-          <button onClick={handleShrink} className="absolute p-4 text-white rounded-full top-4 left-6" aria-label="Shrink">
+          <button onClick={handleShrink} className="absolute p-4 text-white transition-transform duration-300 rounded-full top-4 left-6 hover:scale-125" aria-label="Shrink">
             <img src="/src/assets/축소.png" alt="Shrink" className="w-6 h-6" />
           </button>
         )}
 
         {/* 내용 */}
-        <div className="flex flex-col items-center w-full overflow-y-scroll">
+        <div className="flex flex-col items-center w-full ">
           {/* 프로필 */}
           <div className="flex flex-col items-center w-full mb-4">
             <div className="flex items-center justify-center overflow-hidden bg-gray-300 border-4 border-double rounded-full h-36 w-36 border-recordColor">

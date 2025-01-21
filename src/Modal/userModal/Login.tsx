@@ -65,7 +65,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, ease: 'easeOut' }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md"
     >
       <div
