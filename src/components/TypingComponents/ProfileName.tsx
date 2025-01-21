@@ -38,3 +38,19 @@ const NodeProp: React.FC = () => {
 }
 
 export default NodeProp
+
+
+//받아오는 데이터 -> GET
+//node_id
+//name
+
+//CategoryBox로 전달
+//node_id 전달
+//name 전달
+
+//categoryBox
+//받아온 데이터에 데이터 추가
+//
+
+//부모 컨포너트로 전달
+//API 연동 -> POST
