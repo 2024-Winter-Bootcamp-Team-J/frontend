@@ -5,12 +5,10 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Logo from '../../assets/logo.png'
 
-
 interface LoginProps {
   onClose: () => void
   onOpenRegister: () => void
 }
-
 
 const Login: React.FC<LoginProps> = ({ onClose, onOpenRegister }) => {
   const navigate = useNavigate()
@@ -18,47 +16,57 @@ const Login: React.FC<LoginProps> = ({ onClose, onOpenRegister }) => {
   const [password, setPassword] = useState('')
   const [isAnimating, setIsAnimating] = useState(false)
   const [isStretched, setIsStretched] = useState(false)
- 
 
-// 로그인 버튼 클릭 시 호출되는 함수
-const handleLogin = async () => {
-  if (!email || !password) {
-    alert('이메일과 비밀번호를 모두 입력하세요.') // 입력 필드 확인
-    return
+  // 로그인 버튼 클릭 시 호출되는 함수
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert('이메일과 비밀번호를 모두 입력하세요.') // 입력 필드 확인
+      return
+    }
+
+    try {
+      // 로그인 API 호출
+      const response = await axios.post('http://localhost:8000/userslogin', { email, password })
+
+      console.log('API response:', response.data) // 응답 데이터 확인
+
+      // 토큰 저장
+      const accessToken = response.data.access_token
+      const refreshToken = response.data.refresh_token
+
+      console.log('Access Token:', accessToken) // 액세스 토큰 디버깅
+      console.log('Refresh Token:', refreshToken) // 리프레시 토큰 디버깅
+
+      if (!accessToken || !refreshToken) {
+        alert('토큰을 확인할 수 없습니다.')
+        return
+      }
+
+      localStorage.setItem('accessToken', accessToken)
+      Cookies.set('refreshToken', refreshToken)
+
+      alert('로그인 성공!')
+
+      // 애니메이션 트리거
+      setIsAnimating(true)
+      setTimeout(() => {
+        setIsStretched(true)
+        setTimeout(() => navigate('/main'), 2000) // 메인 화면으로 이동
+      }, 2000)
+    } catch (error: any) {
+      if (error.response) {
+        console.error('API Error Response:', error.response.data) // 백엔드 오류 응답 확인
+      } else {
+        console.error('Unexpected Error:', error) // 기타 오류 확인
+      }
+      alert('로그인 실패: 이메일 또는 비밀번호를 확인하세요.') // 오류 처리
+    }
   }
 
-  try {
-    // 로그인 API 호출
-    const response = await axios.post('http://localhost:8000/userslogin', { email, password })
-
-    // 토큰 저장
-    const accessToken = response.data.access
-    const refreshToken = response.data.refresh
-    localStorage.setItem('accessToken', accessToken)
-    Cookies.set('refreshToken', refreshToken)
-
-    alert('로그인 성공!')
-
-    // 이후 요청에 Authorization 헤더를 기본 설정으로 추가
-    //axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-
-    // 애니메이션 트리거
-    setIsAnimating(true)
-    setTimeout(() => {
-      setIsStretched(true)
-      setTimeout(() => navigate('/main'), 2000) // 메인 화면으로 이동
-    }, 2000)
-  } catch (error: any) {
-    console.error('Error:', error)
-    alert('로그인 실패: 이메일 또는 비밀번호를 확인하세요.') // 오류 처리
-  }
-}
-  
-
-const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-  if (event.key === 'Enter') {
-    handleLogin()
-  }
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleLogin()
+    }
   }
 
   return (
