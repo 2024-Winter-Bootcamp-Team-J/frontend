@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../../assets/Logo.png'
 import Log from '../../components/SideMenuComponents/Log'
+import LoginStatus from '../../modal/userModal/LoginStatus'
 
 type SideMenuBarProps = {
   isCollapsed: boolean
@@ -12,6 +13,11 @@ type SideMenuBarProps = {
 
 const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed, logs }) => {
   const navigate = useNavigate()
+
+  const handleLogout = () => {
+    navigate('/')
+    alert('로그아웃 되었습니다.')
+  }
 
   return (
     <div className="fixed flex items-center justify-start h-screen">
@@ -41,9 +47,7 @@ const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed, 
             </div>
 
             <div className="z-20 ml-4 mt-28 justify-items-start">
-              <button onClick={() => navigate('/')} className="text-xl text-white mt-7">
-                로그아웃
-              </button>
+              <LoginStatus onLogout={handleLogout} />
             </div>
           </motion.div>
         )}
