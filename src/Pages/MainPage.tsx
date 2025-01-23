@@ -5,7 +5,7 @@ import Group from '../components/MainPageComponents/Groups'
 import Search from '../components/MainPageComponents/Search'
 import Typing from '../components/MainPageComponents/Typing'
 import D3Canvas from '../components/MainPageComponents/D3'
-import LocationButton from '../components/MainPageComponents/locationButton'
+import LocationButton from '../components/MainPageComponents/LocationButton'
 
 
 const MainPage: React.FC = () => {

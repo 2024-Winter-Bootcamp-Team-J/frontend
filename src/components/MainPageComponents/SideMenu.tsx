@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../../assets/Logo.png'
 import Log from '../../components/SideMenuComponents/Log'
-import LoginStatus from '../../modal/userModal/LoginStatus'
+import LoginStatus from '../../modal/UserModal/LoginStatus'
 
 type SideMenuBarProps = {
   isCollapsed: boolean

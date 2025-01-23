@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import Login from '../../src/modal/userModal/Login'
-import Register from '../../src/modal/userModal/Register'
+import Login from '../modal/UserModal/Login'
+import Register from '../modal/UserModal/Register'
 import Logo from '../assets/Logo.png'
-
 
 import OnboardingImage1 from '../assets/온보딩1.png'
 import OnboardingImage2 from '../assets/온보딩2.png'
@@ -152,7 +151,7 @@ const OnboardingPage: React.FC = () => {
       {isLoginModalOpen && <Login onClose={closeLoginModal} onOpenRegister={openRegisterModal} />}
 
       {/* 회원가입 모달 */}
-      {isRegisterModalOpen && <Register onClose={closeRegisterModal} openLoginModal={openLoginModal}/>}
+      {isRegisterModalOpen && <Register onClose={closeRegisterModal} openLoginModal={openLoginModal} />}
     </div>
   )
 }
