@@ -8,6 +8,8 @@ type D3Node = d3.SimulationNodeDatum & {
   id: string
   group: string[]
   profile?: string
+  memo?: string
+  time?: string
   x?: number
   y?: number
   fx?: number | null
@@ -49,6 +51,7 @@ const D3Canvas: React.FC = () => {
       id: 'User',
       group: ['user'],
       profile: localStorage.getItem('profileImage') || '/path/to/default-profile.png',
+
       fx: canvasWidth / 2,
       fy: canvasHeight / 2,
     }
@@ -58,6 +61,7 @@ const D3Canvas: React.FC = () => {
     const groupNodes: D3Node[] = categories.map((category) => ({
       id: category,
       group: [category],
+
       x: canvasWidth / 2 + (Math.random() - 0.5) * 300,
       y: canvasHeight / 2 + (Math.random() - 0.5) * 300,
     }))
@@ -66,6 +70,8 @@ const D3Canvas: React.FC = () => {
       id: item.name,
       group: item.category,
       profile: item.profile || '/path/to/default-item-profile.png',
+      memo: item.memo || '',
+      time: item.time || '',
       x: canvasWidth / 2 + (Math.random() - 0.5) * 300,
       y: canvasHeight / 2 + (Math.random() - 0.5) * 300,
     }))

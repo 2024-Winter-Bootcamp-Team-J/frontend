@@ -6,9 +6,10 @@ type CategoryBoxProps = {
   selectedCategories: string[]
   onCategorySelect: (category: string) => void
   onCategoryAdd: (newCategory: string) => void
+  currentNodeId: string | null // 선택된 노드 ID
 }
 
-const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategories, onCategorySelect, onCategoryAdd }) => {
+const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategories, onCategorySelect, onCategoryAdd, currentNodeId }) => {
   const [newCategory, setNewCategory] = useState('')
   const [isInputVisible, setIsInputVisible] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -16,8 +17,14 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategorie
   const handleAddCategory = async () => {
     if (newCategory.trim() === '') return
 
+    if (!currentNodeId) {
+      alert('노드를 선택하세요.')
+      return
+    }
+
     const categoryData = {
       user_id: 1, // 예제 사용자 ID
+      node_id: currentNodeId, // 선택된 노드 ID
       name: newCategory.trim(),
       is_default: categories.includes(newCategory.trim()),
     }
@@ -50,6 +57,9 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategorie
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 mx-4 mb-4">
+      {/* 현재 선택된 노드 표시 */}
+      {/* {currentNodeId && <div className="mb-2 text-lg text-white">(이름)카테고리 선택</div>} */}
+
       {/* Grid 레이아웃 적용 */}
       <div className="grid grid-cols-5 gap-4">
         {categories.map((category) => (

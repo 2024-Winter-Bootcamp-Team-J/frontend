@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import NodeProp from '../TypingComponents/ProfileName'
+import Profilename from '../TypingComponents/ProfileName'
 import CategoryBox from '../TypingComponents/CategorySelection'
 import { motion } from 'framer-motion'
 import '../../Animation/Typing.css'
@@ -22,6 +22,12 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [animationActive, setAnimationActive] = useState(true)
   const [isFadingOut, setIsFadingOut] = useState(false)
   const [isFirstBoxFadingOut, setIsFirstBoxFadingOut] = useState(false)
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+
+  const profiles = [
+    { id: '1', name: '홍길동', icon: '/path/to/icon1.png' },
+    // { id: '2', name: '김철수', icon: '/path/to/icon2.png' },
+  ]
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
@@ -44,6 +50,12 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
     }
   }, [isLoading])
 
+  useEffect(() => {
+    if (!selectedNodeId) {
+      setSelectedCategories([])
+    }
+  }, [selectedNodeId])
+
   const handleClose = () => {
     setIsFirstBoxFadingOut(true)
     setIsFadingOut(true)
@@ -53,7 +65,13 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
       setIsFadingOut(false)
       setIsFirstBoxFadingOut(false)
       addLog(displayText) // 로그 추가
+      console.log('Closed with displayText:', displayText)
     }, 500) // Fade-out 애니메이션 시간과 일치
+  }
+
+  const handleNodeSelect = (id: string) => {
+    setSelectedNodeId(id) // 선택된 노드 ID 업데이트
+    console.log('Selected Node ID:', id)
   }
 
   const handleCategorySelect = (category: string) => {
@@ -63,6 +81,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
           ? prevCategories.filter((item) => item !== category) // 이미 선택된 카테고리면 제거
           : [...prevCategories, category], // 아니면 추가
     )
+    console.log('Selected Categories:', selectedCategories)
   }
 
   const handleCategoryAdd = (newCategory: string) => {
@@ -135,12 +154,18 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                   <div className="flex justify-center mt-10 text-3xl text-white">인물</div>
                   <div className="w-full overflow-x-auto snap-center">
                     <div className="flex flex-row items-center justify-center gap-8">
-                      <NodeProp />
+                      <Profilename profiles={profiles} onSelectNode={handleNodeSelect} />
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
                     <div className="mb-4 text-3xl text-white">이름 카테고리 선택</div>
-                    <CategoryBox categories={categories} selectedCategories={selectedCategories} onCategorySelect={handleCategorySelect} onCategoryAdd={handleCategoryAdd} />
+                    <CategoryBox
+                      categories={categories}
+                      selectedCategories={selectedCategories}
+                      onCategorySelect={handleCategorySelect}
+                      onCategoryAdd={handleCategoryAdd}
+                      currentNodeId={selectedNodeId}
+                    />
                   </div>
                   <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleClose}>
                     확인
@@ -156,7 +181,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={isFocused ? '' : '만들고 싶은 관계를 정리해 주세요!'}
-              className={`h-12 w-full px-4 text-lg shadow-md rounded-xl duration-300 bg-customColor/70 text-white backdrop-blur-md border-2 border-customColor2`}
+              className={`h-12 w-full px-4 text-lg shadow-md rounded-xl duration-300 bg-customColor/70 text-white backdrop-blur-md border-2 border-customColor2 focus:outline-none focus:ring focus:ring-blue-300`}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               onKeyPress={handleKeyPress}
