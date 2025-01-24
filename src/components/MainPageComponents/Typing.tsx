@@ -3,11 +3,12 @@ import Profilename from '../TypingComponents/ProfileName'
 import CategoryBox from '../TypingComponents/CategorySelection'
 import { motion } from 'framer-motion'
 import '../../Animation/Typing.css'
+import axios from 'axios'
 
 type TypingProps = {
   isCollapsed: boolean
   setIsCollapsed?: React.Dispatch<React.SetStateAction<boolean>>
-  addLog: (log: string) => void // 로그 추가 함수
+  addLog: (log: { createdAt: string; name: string; content: string }) => void
 }
 
 const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
@@ -23,71 +24,165 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [isFadingOut, setIsFadingOut] = useState(false)
   const [isFirstBoxFadingOut, setIsFirstBoxFadingOut] = useState(false)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+  const [profiles, setProfiles] = useState<{ id: string; name: string; icon: string }[]>([]) // 동적 프로필 데이터
 
-  const profiles = [
-    { id: '1', name: '홍길동', icon: '/path/to/icon1.png' },
-    // { id: '2', name: '김철수', icon: '/path/to/icon2.png' },
-  ]
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
+      console.log('Input Submitted:', inputValue)
       setShowFirstBox(true)
       setIsLoading(true)
       setAnimationActive(true)
       setDisplayText(inputValue)
       setInputValue('')
+
+      try {
+        const response = await axios.post('http://localhost:8000/controller', {
+          user: 1,
+          content: inputValue.trim(),
+        })
+
+        console.log('API Response:', response.data)
+
+        const createdAt = response.data?.write?.data?.created_at || 'No Time'
+        const name = response.data?.nodes?.group1?.[0]?.name || 'Unknown Name'
+        const content = response.data?.write?.data?.content || 'No Content'
+
+        console.log('Extracted Data:', { createdAt, name, content })
+        // name과 node_id만 추출하여 profiles에 추가
+        const nodes = response.data?.nodes || {}
+        const updatedProfiles: { id: string; name: string; icon: string }[] = []
+
+        Object.values(nodes).forEach((nodeArray) => {
+          // nodeArray가 null이 아니고 배열인지 확인
+          if (nodeArray && Array.isArray(nodeArray)) {
+            nodeArray.forEach((node) => {
+              if (node && typeof node.node_id === 'number' && typeof node.name === 'string') {
+                updatedProfiles.push({
+                  id: String(node.node_id),
+                  name: node.name,
+                  icon: '/path/to/default-icon.png',
+                })
+              }
+            })
+          }
+        })
+
+        console.log('Updated Profiles:', updatedProfiles)
+        setProfiles(updatedProfiles) // 프로필 데이터 상태 업데이트
+
+        // 첫 번째 node_id를 상태로 설정
+        if (updatedProfiles.length > 0) {
+          setSelectedNodeId(updatedProfiles[0].id)
+          console.log(`Selected Node ID: ${updatedProfiles[0].id}`)
+        }
+
+        if (createdAt) {
+          addLog({ createdAt, name, content })
+        } else {
+          console.log('Log Data to be Added:', { createdAt, name, content }) // 디버깅: 추가하려는 로그 데이터
+        }
+      } catch (error: any) {
+        if (error.response) {
+          console.error('Server Error:', error.response.data)
+          console.error('Status Code:', error.response.status)
+        } else {
+          console.error('Request Error:', error.message)
+        }
+      } finally {
+        setIsLoading(true)
+      }
+    }
+  }
+
+  const handleConfirm = async () => {
+    console.log('Confirm Button Clicked')
+    if (!selectedNodeId || selectedCategories.length === 0) {
+      console.error('No node selected or no categories selected.')
+      return
+    }
+
+    try {
+      const relationTypeMapping: { [key: string]: number } = {
+        친구: 1,
+        가족: 2,
+        게임: 3,
+        지인: 4,
+        직장: 5,
+      }
+
+      const requests = selectedCategories.map((category) => {
+        const relationTypeId = relationTypeMapping[category]
+        if (!relationTypeId) {
+          console.error(`Invalid category: ${category}`)
+          return null
+        }
+
+        return axios.post('http://localhost:8000/relationsuser-node-relations/create', {
+          user_id: 1, // 고정된 user_id
+          node_id: selectedNodeId, // 선택된 node_id
+          relation_type_id: relationTypeId, // 매핑된 relation_type_id
+        })
+      })
+
+      const results = await Promise.all(requests)
+      console.log(
+        'Relation API Responses:',
+        results.map((res) => res?.data),
+      )
+
+      handleClose()
+    } catch (error: any) {
+      console.error('Error sending relation data:', error.message)
     }
   }
 
   useEffect(() => {
+    console.log('isLoading changed:', isLoading)
     if (isLoading) {
       const timeout = setTimeout(() => {
+        console.log('Loading Timeout Reached')
         setIsLoading(false)
         setIsExpanded(true)
-        setAnimationActive(false) // 애니메이션 중지
+        setAnimationActive(false)
       }, 5000)
       return () => clearTimeout(timeout)
     }
   }, [isLoading])
 
   useEffect(() => {
+    console.log('selectedNodeId changed:', selectedNodeId)
     if (!selectedNodeId) {
       setSelectedCategories([])
     }
   }, [selectedNodeId])
 
   const handleClose = () => {
+    console.log('Close Button Clicked')
     setIsFirstBoxFadingOut(true)
     setIsFadingOut(true)
     setTimeout(() => {
+      console.log('Animation Complete, Closing Box')
       setShowFirstBox(false)
       setIsExpanded(false)
       setIsFadingOut(false)
       setIsFirstBoxFadingOut(false)
-      addLog(displayText) // 로그 추가
-      console.log('Closed with displayText:', displayText)
-    }, 500) // Fade-out 애니메이션 시간과 일치
+    }, 500)
   }
 
   const handleNodeSelect = (id: string) => {
-    setSelectedNodeId(id) // 선택된 노드 ID 업데이트
-    console.log('Selected Node ID:', id)
+    console.log('Node Selected:', id)
+    setSelectedNodeId(id)
   }
 
   const handleCategorySelect = (category: string) => {
-    setSelectedCategories(
-      (prevCategories) =>
-        prevCategories.includes(category)
-          ? prevCategories.filter((item) => item !== category) // 이미 선택된 카테고리면 제거
-          : [...prevCategories, category], // 아니면 추가
-    )
-    console.log('Selected Categories:', selectedCategories)
+    console.log('Category Selected:', category)
+    setSelectedCategories((prevCategories) => (prevCategories.includes(category) ? prevCategories.filter((item) => item !== category) : [...prevCategories, category]))
   }
 
   const handleCategoryAdd = (newCategory: string) => {
+    console.log('New Category Added:', newCategory)
     setCategories((prevCategories) => [...prevCategories, newCategory])
-    setSelectedCategories((prevCategories) => [...prevCategories, newCategory]) // 추가된 카테고리를 선택된 상태로 유지
-    console.log('New category added:', newCategory)
+    setSelectedCategories((prevCategories) => [...prevCategories, newCategory])
   }
 
   return (
@@ -158,7 +253,6 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
-                    <div className="mb-4 text-3xl text-white">이름 카테고리 선택</div>
                     <CategoryBox
                       categories={categories}
                       selectedCategories={selectedCategories}
@@ -167,7 +261,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                       currentNodeId={selectedNodeId}
                     />
                   </div>
-                  <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleClose}>
+                  <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleConfirm}>
                     확인
                   </div>
                 </motion.div>
@@ -179,11 +273,17 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
             <input
               type="text"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(e) => {
+                setInputValue(e.target.value)
+              }}
               placeholder={isFocused ? '' : '만들고 싶은 관계를 정리해 주세요!'}
               className={`h-12 w-full px-4 text-lg shadow-md rounded-xl duration-300 bg-customColor/70 text-white backdrop-blur-md border-2 border-customColor2 focus:outline-none focus:ring focus:ring-blue-300`}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
+              onFocus={() => {
+                setIsFocused(true)
+              }}
+              onBlur={() => {
+                setIsFocused(false)
+              }}
               onKeyPress={handleKeyPress}
             />
           </div>
