@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import NodeMemo from './NodMemo'
 
 interface NodProps {
   node: {
     id: string
     profile?: string
-    group: string[] // 그룹 정보 추가
+    group: string[]
+    memo?: string
+    time?: string
   } | null
   onClose: () => void
 }
@@ -159,8 +162,8 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
             )}
           </div>
         </div>
-        <div className="flex w-full">
-          <div className="items-start w-full pb-2 text-3xl text-white border-b-2 border-white">메모</div>
+        <div className="flex flex-col w-full text-white ">
+          <NodeMemo memo={node.memo} time={node.time} />
         </div>
       </div>
     </div>

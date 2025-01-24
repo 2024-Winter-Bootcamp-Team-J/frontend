@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import dummyData from '../../DummyData/Dummy'
-import Nod from '../../modal/Nods/Nod'
+import Nod from './Nod'
 
 const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
   const [selectedNode, setSelectedNode] = useState<any>(null)
@@ -68,6 +68,8 @@ const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
             id: selectedNode.name,
             profile: selectedNode.profile,
             group: selectedNode.category || [],
+            memo: selectedNode.memo,
+            time: selectedNode.time,
           }}
           onClose={handleClose}
         />
