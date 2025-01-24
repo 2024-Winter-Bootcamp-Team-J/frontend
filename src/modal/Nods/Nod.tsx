@@ -171,3 +171,11 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
 }
 
 export default Nod
+
+// node_id get
+// 카테고리 get, post
+// 메모, 시간 get
+
+// 1. Nod.tsx 에서 get 요청으로 read 안에 있는 /memos{memo_id}  이거 연동 ㄱㄱ
+// 2. Nod.tsx의 child 컨포넌트 (NodMemo.tsx) 가서 response body에 맞춰서 바꿈
+// 3. Nod.tsx의 부모 컨포넌트 가서 (D3, UserNodeProfile.tsx) 가서 수정

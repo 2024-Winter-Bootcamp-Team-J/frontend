@@ -262,3 +262,5 @@ const D3Canvas: React.FC = () => {
 }
 
 export default D3Canvas
+
+// node_id, memo, time, 등등 get 
