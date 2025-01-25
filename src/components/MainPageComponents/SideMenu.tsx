@@ -5,10 +5,16 @@ import Logo from '../../assets/Logo.png'
 import Log from '../../components/SideMenuComponents/Log'
 import LoginStatus from '../../modal/UserModal/LoginStatus'
 
+type LogItem = {
+  content: string
+  name: string
+  createdAt: string
+}
+
 type SideMenuBarProps = {
   isCollapsed: boolean
   setIsCollapsed: Dispatch<SetStateAction<boolean>>
-  logs: string[] // 로그 리스트
+  logs: LogItem[] // 로그 리스트
 }
 
 const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed, logs }) => {
@@ -39,11 +45,14 @@ const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed, 
 
             {/* 로그 출력 */}
             <div className="z-40 overflow-y-auto h-[750px] relative">
-              {logs.map((log, index) => (
-                <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.3 }}>
-                  <Log content={log} />
-                </motion.div>
-              ))}
+              {logs.map((log, index) => {
+                console.log('Log ${index} Data:', log) // 로그 데이터 출력
+                return (
+                  <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.3 }}>
+                    <Log content={log.content} name={log.name} createdAt={log.createdAt} />
+                  </motion.div>
+                )
+              })}
             </div>
 
             <div className="z-20 ml-4 mt-28 justify-items-start">

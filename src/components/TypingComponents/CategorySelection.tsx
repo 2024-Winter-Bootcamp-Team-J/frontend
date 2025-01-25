@@ -58,7 +58,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategorie
   return (
     <div className="flex flex-col items-center justify-center gap-4 mx-4 mb-4">
       {/* 현재 선택된 노드 표시 */}
-      {/* {currentNodeId && <div className="mb-2 text-lg text-white">(이름)카테고리 선택</div>} */}
+      {currentNodeId && <div className="mb-2 text-lg text-white">(이름)카테고리 선택</div>}
 
       {/* Grid 레이아웃 적용 */}
       <div className="grid grid-cols-5 gap-4">
