@@ -18,13 +18,13 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [displayText, setDisplayText] = useState('')
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [categories, setCategories] = useState(['친구', '가족', '게임', '지인', '직장']) // 초기 카테고리
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [categories, setCategories] = useState(['친구', '가족', '게임', '지인', '직장'])
   const [animationActive, setAnimationActive] = useState(true)
   const [isFadingOut, setIsFadingOut] = useState(false)
   const [isFirstBoxFadingOut, setIsFirstBoxFadingOut] = useState(false)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
-  const [profiles, setProfiles] = useState<{ id: string; name: string; icon: string }[]>([]) // 동적 프로필 데이터
+  const [profiles, setProfiles] = useState<{ id: string; name: string; icon: string }[]>([])
 
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
@@ -48,12 +48,11 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         const content = response.data?.write?.data?.content || 'No Content'
 
         console.log('Extracted Data:', { createdAt, name, content })
-        // name과 node_id만 추출하여 profiles에 추가
+
         const nodes = response.data?.nodes || {}
         const updatedProfiles: { id: string; name: string; icon: string }[] = []
 
         Object.values(nodes).forEach((nodeArray) => {
-          // nodeArray가 null이 아니고 배열인지 확인
           if (nodeArray && Array.isArray(nodeArray)) {
             nodeArray.forEach((node) => {
               if (node && typeof node.node_id === 'number' && typeof node.name === 'string') {
@@ -68,9 +67,8 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         })
 
         console.log('Updated Profiles:', updatedProfiles)
-        setProfiles(updatedProfiles) // 프로필 데이터 상태 업데이트
+        setProfiles(updatedProfiles)
 
-        // 첫 번째 node_id를 상태로 설정
         if (updatedProfiles.length > 0) {
           setSelectedNodeId(updatedProfiles[0].id)
           console.log(`Selected Node ID: ${updatedProfiles[0].id}`)
@@ -79,7 +77,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         if (createdAt) {
           addLog({ createdAt, name, content })
         } else {
-          console.log('Log Data to be Added:', { createdAt, name, content }) // 디버깅: 추가하려는 로그 데이터
+          console.log('Log Data to be Added:', { createdAt, name, content })
         }
       } catch (error: any) {
         if (error.response) {
@@ -96,8 +94,8 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleConfirm = async () => {
     console.log('Confirm Button Clicked')
-    if (!selectedNodeId || selectedCategories.length === 0) {
-      console.error('No node selected or no categories selected.')
+    if (!selectedNodeId || !selectedCategory) {
+      console.error('No node selected or no category selected.')
       return
     }
 
@@ -110,51 +108,40 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         직장: 5,
       }
 
-      const requests = selectedCategories.map((category) => {
-        const relationTypeId = relationTypeMapping[category]
-        if (!relationTypeId) {
-          console.error(`Invalid category: ${category}`)
-          return null
-        }
+      const relationTypeId = relationTypeMapping[selectedCategory]
+      if (!relationTypeId) {
+        console.error(`Invalid category: ${selectedCategory}`)
+        return
+      }
 
-        return axios.post('http://localhost:8000/relationsuser-node-relations/create', {
-          user_id: 1, // 고정된 user_id
-          node_id: selectedNodeId, // 선택된 node_id
-          relation_type_id: relationTypeId, // 매핑된 relation_type_id
-        })
+      const request = await axios.post('http://localhost:8000/relationsuser-node-relations/create', {
+        user_id: 1,
+        node_id: selectedNodeId,
+        relation_type_id: relationTypeId,
       })
 
-      const results = await Promise.all(requests)
-      console.log(
-        'Relation API Responses:',
-        results.map((res) => res?.data),
-      )
-
+      console.log('Relation API Response:', request.data)
       handleClose()
     } catch (error: any) {
       console.error('Error sending relation data:', error.message)
     }
   }
 
-  useEffect(() => {
-    console.log('isLoading changed:', isLoading)
-    if (isLoading) {
-      const timeout = setTimeout(() => {
-        console.log('Loading Timeout Reached')
-        setIsLoading(false)
-        setIsExpanded(true)
-        setAnimationActive(false)
-      }, 5000)
-      return () => clearTimeout(timeout)
-    }
-  }, [isLoading])
+  const handleNodeSelect = (id: string) => {
+    console.log('Node Selected:', id)
+    setSelectedNodeId(id)
+  }
 
-  useEffect(() => {
-    console.log('selectedNodeId changed:', selectedNodeId)
-    if (!selectedNodeId) {
-      setSelectedCategories([])
-    }
-  }, [selectedNodeId])
+  const handleCategorySelect = (category: string) => {
+    console.log('Category Selected:', category)
+    setSelectedCategory(category === selectedCategory ? null : category)
+  }
+
+  const handleCategoryAdd = (newCategory: string) => {
+    console.log('New Category Added:', newCategory)
+    setCategories((prevCategories) => [...prevCategories, newCategory])
+    setSelectedCategory(newCategory)
+  }
 
   const handleClose = () => {
     console.log('Close Button Clicked')
@@ -169,21 +156,22 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
     }, 500)
   }
 
-  const handleNodeSelect = (id: string) => {
-    console.log('Node Selected:', id)
-    setSelectedNodeId(id)
-  }
+  useEffect(() => {
+    if (isLoading) {
+      const timeout = setTimeout(() => {
+        setIsLoading(false)
+        setIsExpanded(true)
+        setAnimationActive(false)
+      }, 5000)
+      return () => clearTimeout(timeout)
+    }
+  }, [isLoading])
 
-  const handleCategorySelect = (category: string) => {
-    console.log('Category Selected:', category)
-    setSelectedCategories((prevCategories) => (prevCategories.includes(category) ? prevCategories.filter((item) => item !== category) : [...prevCategories, category]))
-  }
-
-  const handleCategoryAdd = (newCategory: string) => {
-    console.log('New Category Added:', newCategory)
-    setCategories((prevCategories) => [...prevCategories, newCategory])
-    setSelectedCategories((prevCategories) => [...prevCategories, newCategory])
-  }
+  useEffect(() => {
+    if (!selectedNodeId) {
+      setSelectedCategory(null)
+    }
+  }, [selectedNodeId])
 
   return (
     <div
@@ -207,21 +195,18 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                   {animationActive && (
                     <>
                       <motion.div
-                        key={inputValue + '-blur1'}
                         initial={{ x: -150, y: -150 }}
-                        animate={{ x: [-150, 150, -150], y: [-150, -150, -150] }}
+                        animate={{ x: [150, -150, 150], y: [150, -150, 150] }}
                         transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
                         className="absolute w-[300px] h-[300px] bg-gray-400 opacity-70 rounded-full filter blur-[150px]"
                       ></motion.div>
                       <motion.div
-                        key={inputValue + '-blur2'}
                         initial={{ x: 150, y: -150 }}
-                        animate={{ x: [150, -150, 150], y: [-150, -150, -150] }}
+                        animate={{ x: [-150, 150, -150], y: [-150, -150, -150] }}
                         transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut', delay: 1 }}
                         className="absolute w-[250px] h-[250px] bg-white opacity-60 rounded-full filter blur-[120px]"
                       ></motion.div>
                       <motion.div
-                        key={inputValue + '-blur3'}
                         initial={{ x: 0, y: 150 }}
                         animate={{ x: [0, 0, 0], y: [150, -150, 150] }}
                         transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut', delay: 2 }}
@@ -240,10 +225,6 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                 animate={{ opacity: isFadingOut ? 0 : 1 }}
                 transition={{ duration: 0.5 }}
                 className={`ml-auto mr-auto overflow-hidden text-white transform border-2 rounded-b-lg shadow-md bg-loadingExpand/60 backdrop-blur-md border-recordColor/70`}
-                style={{
-                  height: 'auto',
-                  paddingTop: '20px',
-                }}
               >
                 <motion.div initial={{ opacity: 1 }} animate={{ opacity: isFadingOut ? 0 : 1 }} transition={{ duration: 0.5 }} className="flex flex-col items-center justify-center mb-6">
                   <div className="flex justify-center mt-10 text-3xl text-white">인물</div>
@@ -253,13 +234,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
-                    <CategoryBox
-                      categories={categories}
-                      selectedCategories={selectedCategories}
-                      onCategorySelect={handleCategorySelect}
-                      onCategoryAdd={handleCategoryAdd}
-                      currentNodeId={selectedNodeId}
-                    />
+                    <CategoryBox categories={categories} selectedCategory={selectedCategory} onCategorySelect={handleCategorySelect} onCategoryAdd={handleCategoryAdd} currentNodeId={selectedNodeId} />
                   </div>
                   <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleConfirm}>
                     확인
@@ -273,17 +248,11 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
             <input
               type="text"
               value={inputValue}
-              onChange={(e) => {
-                setInputValue(e.target.value)
-              }}
+              onChange={(e) => setInputValue(e.target.value)}
               placeholder={isFocused ? '' : '만들고 싶은 관계를 정리해 주세요!'}
-              className={`h-12 w-full px-4 text-lg shadow-md rounded-xl duration-300 bg-customColor/70 text-white backdrop-blur-md border-2 border-customColor2 focus:outline-none focus:ring focus:ring-blue-300`}
-              onFocus={() => {
-                setIsFocused(true)
-              }}
-              onBlur={() => {
-                setIsFocused(false)
-              }}
+              className="w-full h-12 px-4 text-lg text-white duration-300 border-2 shadow-md rounded-xl bg-customColor/70 backdrop-blur-md border-customColor2 focus:outline-none focus:ring focus:ring-blue-300"
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               onKeyPress={handleKeyPress}
             />
           </div>
