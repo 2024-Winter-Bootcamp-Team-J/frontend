@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import dummyData from '../../dummyData/Dummy' // Dummy 데이터를 불러옴
+import dummyData from '../../DummyData/Dummy' // Dummy 데이터를 불러옴
 
 const Search: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false)

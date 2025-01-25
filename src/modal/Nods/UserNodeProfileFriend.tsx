@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import dummyData from '../../dummyData/Dummy'
-import Nod from '../nods/nod'
+import dummyData from '../../DummyData/Dummy'
+import Nod from '../Nods/Nod'
 
 const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
   const [selectedNode, setSelectedNode] = useState<any>(null)
