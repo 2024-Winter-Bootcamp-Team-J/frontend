@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import SideMenuBar from '../components/MainPageComponents/SideMenu'
-import Group from '../components/MainPageComponents/Groups'
-import Search from '../components/MainPageComponents/Search'
-import Typing from '../components/MainPageComponents/Typing'
-import D3Canvas from '../components/MainPageComponents/D3'
-import LocationButton from '../components/MainPageComponents/LocationButton'
+import SideMenuBar from '../components/mainPageComponents/sideMenu'
+import Group from '../components/mainPageComponents/groups'
+import Search from '../components/mainPageComponents/search'
+import Typing from '../components/mainPageComponents/typing'
+import D3Canvas from '../components/mainPageComponents/d3'
+import LocationButton from '../components/mainPageComponents/locationButton'
 
 
 const MainPage: React.FC = () => {

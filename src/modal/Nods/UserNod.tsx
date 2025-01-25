@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import ProfileCard from './UserNodeProfileFriend'
+import ProfileCard from './userNodeProfileFriend'
 
 interface NodProps {
   node: {

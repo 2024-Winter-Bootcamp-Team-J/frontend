@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import Login from '../modal/UserModal/Login'
-import Register from '../modal/UserModal/Register'
+import Login from '../modal/userModal/login'
+import Register from '../modal/userModal/register'
 import Logo from '../assets/Logo.png'
 
 import OnboardingImage1 from '../assets/온보딩1.png'
