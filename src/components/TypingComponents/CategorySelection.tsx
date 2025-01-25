@@ -3,13 +3,13 @@ import axios from 'axios'
 
 type CategoryBoxProps = {
   categories: string[]
-  selectedCategory: string | null
+  selectedCategories: string[]
   onCategorySelect: (category: string) => void
   onCategoryAdd: (newCategory: string) => void
   currentNodeId: string | null // 선택된 노드 ID
 }
 
-const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategory, onCategorySelect, onCategoryAdd, currentNodeId }) => {
+const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategories, onCategorySelect, onCategoryAdd, currentNodeId }) => {
   const [newCategory, setNewCategory] = useState('')
   const [isInputVisible, setIsInputVisible] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -69,14 +69,14 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories, selectedCategory,
             className="relative flex items-center justify-center p-2 text-lg font-bold text-white transition-all duration-300 cursor-pointer "
           >
             <div
-              className={`z-50 ${selectedCategory === category ? '' : ''}`}
+              className={`z-50 ${selectedCategories.includes(category) ? '' : ''}`}
               style={{
                 transition: 'border 0.3s ease',
               }}
             >
               {category}
             </div>
-            {selectedCategory === category && <div className="absolute inset-0 bg-blue-500 rounded-lg blur-md" style={{ filter: 'blur(5px)' }} />}
+            {selectedCategories.includes(category) && <div className="absolute inset-0 bg-blue-500 rounded-lg blur-md" style={{ filter: 'blur(5px)' }} />}
           </div>
         ))}
 
