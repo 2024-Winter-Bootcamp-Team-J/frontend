@@ -1,10 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App' // App.tsx를 불러옴
-import './index.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import OnboardingPage from './pages/Onboarding'
+import MainPage from './pages/MainPage'
+import './index.css' // import './styles/global.css'
+// import Nod from './components/Nods/Nod'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<OnboardingPage />} />
+        <Route path="/main" element={<MainPage />} />
+
+        {/* <Route path="/nod" element={<Nod/>}/> */}
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>,
 )
