@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../../assets/Logo.png'
-import Log from '../SideMenuComponents/log'
+import Log from '../sideMenuComponents/log'
 import LoginStatus from '../../modal/userModal/loginStatus'
 
 type LogItem = {

@@ -7,14 +7,21 @@ import Typing from '../components/mainPageComponents/typing'
 import D3Canvas from '../components/mainPageComponents/d3'
 import LocationButton from '../components/mainPageComponents/locationButton'
 
+type Log = {
+  createdAt: string;
+  name: string;
+  content: string;
+};
+
 
 const MainPage: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [logs, setLogs] = useState<string[]>([])
+  const [logs, setLogs] = useState<Log[]>([])
 
-  const addLog = (log: string) => {
-    setLogs((prevLogs) => [...prevLogs, log])
-  }
+  const addLog = (log: Log) => {
+    console.log('Log added:', log);
+    setLogs((prevLogs) => [...prevLogs, log]);
+  };
 
   const moveToUserNode = () => {
     console.log('Moving to user node')
