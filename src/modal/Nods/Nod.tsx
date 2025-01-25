@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import NodeMemo from './NodMemo'
+import NodeMemo from './nodMemo'
 
 interface NodProps {
   node: {
