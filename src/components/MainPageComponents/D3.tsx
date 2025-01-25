@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
-import dummyData from '../../dummyData/Dummy'
-import Nod from '../../modal/nods/nod'
-import UserNod from '../../modal/nods/userNod'
+import dummyData from '../../DummyData/Dummy'
+import Nod from '../../modal/Nods/Nod'
+import UserNod from '../../modal/Nods/UserNod'
 
 type D3Node = d3.SimulationNodeDatum & {
   id: string
@@ -263,4 +263,4 @@ const D3Canvas: React.FC = () => {
 
 export default D3Canvas
 
-// node_id, memo, time, 등등 get
+// node_id, memo, time, 등등 get 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import Profilename from '../typingComponents/ProfileName'
-import CategoryBox from '../typingComponents/CategorySelection'
+import Profilename from '../TypingComponents/ProfileName'
+import CategoryBox from '../TypingComponents/CategorySelection'
 import { motion } from 'framer-motion'
 import '../../Animation/Typing.css'
 import axios from 'axios'
