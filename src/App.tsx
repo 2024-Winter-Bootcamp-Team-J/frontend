@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import OnboardingPage from './pages/Onboarding' // 상대 경로 수정
-import MainPage from './pages/MainPage'
+import OnboardingPage from '../src/pages/onboarding'
+import MainPage from './pages/mainPage'
 
 const App: React.FC = () => {
   return (
