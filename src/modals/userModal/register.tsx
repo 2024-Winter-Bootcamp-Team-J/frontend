@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import Logo from '../../assets/logo.png'
+import Logo from '../../assets/Logo.png'
 import axios from 'axios'
 
 interface RegisterProps {
