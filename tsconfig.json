@@ -10,8 +10,8 @@
     "baseUrl": "./",
     "paths": {
       "@components/*": ["src/components/*"],
-      "@pages/*": ["src/pages/*"],
-      "@modal/*": ["src/modal/*"]
+      "@pages/*": ["src/page/*"],
+      "@modal/*": ["src/modals/*"]
     },
     "allowJs": true,
     "resolveJsonModule": true,
