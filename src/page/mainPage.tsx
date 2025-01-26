@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import SideMenuBar from '../components/mainPageComponents/sideMenu'
-import Group from '../components/mainPageComponents/groups'
-import Search from '../components/mainPageComponents/search'
-import Typing from '../components/mainPageComponents/typing'
-import D3Canvas from '../components/mainPageComponents/d3'
-import LocationButton from '../components/mainPageComponents/locationButton'
+import SideMenuBar from '../components/mainPageComponent/sideMenu'
+import Group from '../components/mainPageComponent/groups'
+import Search from '../components/mainPageComponent/search'
+import Typing from '../components/mainPageComponent/typing'
+import D3Canvas from '../components/mainPageComponent/d3'
+import LocationButton from '../components/mainPageComponent/locationButton'
 
 type Log = {
   createdAt: string;

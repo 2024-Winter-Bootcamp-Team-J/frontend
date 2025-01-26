@@ -3,7 +3,7 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import Logo from '../../assets/logo.png'
+import Logo from '../../assets/Logo.png'
 
 interface LoginProps {
   onClose: () => void
