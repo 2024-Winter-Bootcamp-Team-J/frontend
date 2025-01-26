@@ -16,7 +16,7 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
