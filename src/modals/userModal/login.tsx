@@ -26,7 +26,7 @@ const Login: React.FC<LoginProps> = ({ onClose, onOpenRegister }) => {
 
     try {
       // 로그인 API 호출
-      const response = await axios.post('http://localhost:8000/userslogin', { email, password })
+      const response = await axios.post('http://localhost:8000/users/login', { email, password })
 
       console.log('API response:', response.data) // 응답 데이터 확인
 

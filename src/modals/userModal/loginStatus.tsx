@@ -10,12 +10,12 @@ const LoginStatus: React.FC<LoginStatusProps> = ({ onLogout }) => {
 
   const accessToken = localStorage.getItem('accessToken') // 로컬 스토리지에서 토큰 가져오기
 
-  useEffect(() => {
-    if (!accessToken) {
-      navigate('/')
-      alert('로그인을 해주세요.') // 토큰이 없으면 로그인 페이지로 이동
-    }
-  }, [accessToken, navigate])
+  // useEffect(() => {
+  //   if (!accessToken) {
+  //     navigate('/')
+  //     alert('로그인을 해주세요.') // 토큰이 없으면 로그인 페이지로 이동
+  //   }
+  // }, [accessToken, navigate])
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken') // 토큰 삭제
