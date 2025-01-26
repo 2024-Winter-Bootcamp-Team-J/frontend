@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import OnboardingPage from '../src/pages/onboarding'
-import MainPage from '../src/pages/mainPage'
-import './index.css' // import './styles/global.css'
+import OnboardingPage from './pages/onboarding'
+import MainPage from './pages/mainPage'
+import './index.css' // import './styles/global.css'
 // import Nod from './components/Nods/Nod'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

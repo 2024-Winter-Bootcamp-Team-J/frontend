@@ -10,13 +10,13 @@
     "baseUrl": "./",
     "paths": {
       "@components/*": ["src/components/*"],
-      "@pages/*": ["src/Pages/*"],
-      "@modal/*": ["src/Modal/*"]
+      "@pages/*": ["src/pages/*"],
+      "@modal/*": ["src/modal/*"]
     },
     "allowJs": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    // "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

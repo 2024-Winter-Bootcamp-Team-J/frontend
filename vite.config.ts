@@ -7,8 +7,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@components': path.resolve(__dirname, './src/components'),
-      '@pages': path.resolve(__dirname, './src/Pages'),
-      '@modal': path.resolve(__dirname, './src/Modal'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@modal': path.resolve(__dirname, './src/modal'),
     },
   },
   server: {
