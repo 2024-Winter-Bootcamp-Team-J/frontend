@@ -18,7 +18,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [displayText, setDisplayText] = useState('')
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 단일 선택
   const [categories, setCategories] = useState(['친구', '가족', '게임', '지인', '직장']) // 초기 카테고리
   const [animationActive, setAnimationActive] = useState(true)
   const [isFadingOut, setIsFadingOut] = useState(false)
@@ -48,12 +48,10 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         const content = response.data?.write?.data?.content || 'No Content'
 
         console.log('Extracted Data:', { createdAt, name, content })
-        // name과 node_id만 추출하여 profiles에 추가
         const nodes = response.data?.nodes || {}
         const updatedProfiles: { id: string; name: string; icon: string }[] = []
 
         Object.values(nodes).forEach((nodeArray) => {
-          // nodeArray가 null이 아니고 배열인지 확인
           if (nodeArray && Array.isArray(nodeArray)) {
             nodeArray.forEach((node) => {
               if (node && typeof node.node_id === 'number' && typeof node.name === 'string') {
@@ -68,9 +66,8 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         })
 
         console.log('Updated Profiles:', updatedProfiles)
-        setProfiles(updatedProfiles) // 프로필 데이터 상태 업데이트
+        setProfiles(updatedProfiles)
 
-        // 첫 번째 node_id를 상태로 설정
         if (updatedProfiles.length > 0) {
           setSelectedNodeId(updatedProfiles[0].id)
           console.log(`Selected Node ID: ${updatedProfiles[0].id}`)
@@ -79,7 +76,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         if (createdAt) {
           addLog({ createdAt, name, content })
         } else {
-          console.log('Log Data to be Added:', { createdAt, name, content }) // 디버깅: 추가하려는 로그 데이터
+          console.log('Log Data to be Added:', { createdAt, name, content })
         }
       } catch (error: any) {
         if (error.response) {
@@ -96,8 +93,8 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleConfirm = async () => {
     console.log('Confirm Button Clicked')
-    if (!selectedNodeId || selectedCategories.length === 0) {
-      console.error('No node selected or no categories selected.')
+    if (!selectedNodeId || !selectedCategory) {
+      console.error('No node selected or no category selected.')
       return
     }
 
@@ -110,26 +107,19 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         직장: 5,
       }
 
-      const requests = selectedCategories.map((category) => {
-        const relationTypeId = relationTypeMapping[category]
-        if (!relationTypeId) {
-          console.error(`Invalid category: ${category}`)
-          return null
-        }
+      const relationTypeId = relationTypeMapping[selectedCategory]
+      if (!relationTypeId) {
+        console.error(`Invalid category: ${selectedCategory}`)
+        return
+      }
 
-        return axios.post('http://localhost:8000/relationsuser-node-relations/create', {
-          user_id: 1, // 고정된 user_id
-          node_id: selectedNodeId, // 선택된 node_id
-          relation_type_id: relationTypeId, // 매핑된 relation_type_id
-        })
+      const response = await axios.post('http://localhost:8000/relations/user-node-relations/create', {
+        user_id: 1,
+        node_id: selectedNodeId,
+        relation_type_id: relationTypeId,
       })
 
-      const results = await Promise.all(requests)
-      console.log(
-        'Relation API Responses:',
-        results.map((res) => res?.data),
-      )
-
+      console.log('Relation API Response:', response.data)
       handleClose()
     } catch (error: any) {
       console.error('Error sending relation data:', error.message)
@@ -152,7 +142,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   useEffect(() => {
     console.log('selectedNodeId changed:', selectedNodeId)
     if (!selectedNodeId) {
-      setSelectedCategories([])
+      setSelectedCategory(null)
     }
   }, [selectedNodeId])
 
@@ -176,13 +166,13 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleCategorySelect = (category: string) => {
     console.log('Category Selected:', category)
-    setSelectedCategories((prevCategories) => (prevCategories.includes(category) ? prevCategories.filter((item) => item !== category) : [...prevCategories, category]))
+    setSelectedCategory(category)
   }
 
   const handleCategoryAdd = (newCategory: string) => {
     console.log('New Category Added:', newCategory)
     setCategories((prevCategories) => [...prevCategories, newCategory])
-    setSelectedCategories((prevCategories) => [...prevCategories, newCategory])
+    setSelectedCategory(newCategory)
   }
 
   return (
@@ -255,7 +245,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
                     <CategoryBox
                       categories={categories}
-                      selectedCategories={selectedCategories}
+                      selectedCategory={selectedCategory}
                       onCategorySelect={handleCategorySelect}
                       onCategoryAdd={handleCategoryAdd}
                       currentNodeId={selectedNodeId}
