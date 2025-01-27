@@ -3,8 +3,9 @@ import ProfileCard from './userNodeProfileFriend'
 
 interface NodProps {
   node: {
+    name: string
     id: string
-    profile?: string
+    node_img?: string
   } | null
   onClose: () => void
 }
@@ -70,12 +71,12 @@ const UserNod: React.FC<NodProps> = ({ node, onClose }) => {
         <div className="flex flex-col items-center w-full h-full">
           <div className="flex flex-col items-center w-full mb-4">
             {/* 상단 프로필 */}
-            <div className="flex items-center justify-center bg-gray-300 rounded-full h-36 oveflow-hidden w-36">
-              {node.profile ? <img src={node.profile} alt={`${node.id} Profile`} /> : <div className="text-white">No Image</div>}
+            <div className="flex items-center justify-center overflow-hidden bg-gray-300 rounded-full h-36 w-36">
+              {node.node_img ? <img src={node.node_img} alt={`${node.id} Profile`} /> : <div className="text-white">No Image</div>}
             </div>
 
             {/* 이름 */}
-            <h2 className="mt-4 text-2xl font-bold text-white">{node.id}</h2>
+            <h2 className="mt-4 text-2xl font-bold text-white">{node.name}</h2>
           </div>
 
           {/* 모달 하단 영역 */}

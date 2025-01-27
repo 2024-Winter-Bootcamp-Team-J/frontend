@@ -32,7 +32,7 @@ const Register: React.FC<RegisterProps> = ({ onClose, openLoginModal }) => {
         formData.append('profile_image', blob, 'profile_image.jpg') // 이미지 추가
       }
 
-      const response = await axios.post('http://localhost:8000/usersregister', formData, {
+      const response = await axios.post('http://localhost:8000/users/register', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

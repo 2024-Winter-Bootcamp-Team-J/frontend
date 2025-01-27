@@ -41,7 +41,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories = [], selectedCate
 
     try {
       setIsSubmitting(true)
-      const response = await axios.post('http://localhost:8000/relationsrelation-types/create', categoryData)
+      const response = await axios.post('http://localhost:8000/relations/types/create', categoryData)
 
       console.log('Category added successfully', response.data)
 
