@@ -32,8 +32,16 @@ const D3Canvas: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/node');
-        const apiData = response.data;
+        // Fetch relation types
+        const relationTypesResponse = await axios.get('http://localhost:8000/relations/types');
+        const relationTypes = relationTypesResponse.data.reduce((acc: { [key: number]: string }, item: any) => {
+          acc[item.relation_type_id] = item.name;
+          return acc;
+        }, {});
+  
+        // Fetch nodes
+        const nodesResponse = await axios.get('http://localhost:8000/node');
+        const apiData = nodesResponse.data;
   
         // Define userNode
         const userNode: D3Node = {
@@ -45,15 +53,19 @@ const D3Canvas: React.FC = () => {
         };
   
         // Define group nodes from relation_type_ids
-        const groupNodes: D3Node[] = Array.from(new Set(apiData.flatMap((item: any) => item.relation_type_ids))).map(
-          (relationId) => {
-            return {
-              id: `relation-${relationId}`,
-              x: 1500 + (Math.random() - 0.5) * 300,
-              y: 1000 + (Math.random() - 0.5) * 300,
-            };
-          }
-        );
+        const groupNodes: D3Node[] = Array.from(
+          new Set(apiData.flatMap((item: any) => item.relation_type_ids as number[])) as Set<number>
+        ).map((relationId) => {
+          const id = relationId as number;
+          return {
+            id: `relation-${id}`,
+            name: relationTypes[id] || `Relation ${id}`,
+            x: 1500 + (Math.random() - 0.5) * 300,
+            y: 1000 + (Math.random() - 0.5) * 300,
+          };
+        });
+        
+        
   
         // Define item nodes
         const nodes: D3Node[] = apiData.map((item: any) => {
@@ -87,7 +99,7 @@ const D3Canvas: React.FC = () => {
         const allNodes = [userNode, ...groupNodes, ...nodes];
         renderGraph(allNodes, links);
       } catch (error) {
-        console.error('Error fetching nodes:', error);
+        console.error('Error fetching data:', error);
       }
     };
   
@@ -164,22 +176,24 @@ const D3Canvas: React.FC = () => {
         .delay((_, i) => i * 100)
         .attr('opacity', 0.8);
   
-      const node = g
+        const node = g
         .selectAll<SVGGElement, D3Node>('g.node')
         .data(nodes)
         .join('g')
         .attr('class', 'node')
         .call(drag)
         .on('click', (_event, d) => {
-          if (!d.name) return; // Ignore category nodes
-          console.log(`Node clicked: ${JSON.stringify(d)}`);
+          // Prevent group nodes from triggering click events
+          if (!d.name || d.id.startsWith('relation-')) {
+            return; // Ignore group nodes
+          }
           if (d.id === 'User') {
             setIsUserModalOpen(true);
             return;
           }
           setSelectedNode(d);
         });
-  
+      
         node.each(function (d, i) {
           const currentNode = d3.select<SVGGElement, D3Node>(this);
           const delay = Math.random() * 2000; // 랜덤 딜레이 (최대 2초)
@@ -232,12 +246,12 @@ const D3Canvas: React.FC = () => {
             }
         
             animateRipple();
-          } else if (!d.name) {
-            // Relation (category) nodes
+          } else if (d.id.startsWith('relation-')) {
+            // Group (relation) nodes
             currentNode
               .append('circle')
               .attr('r', 0)
-              .attr('fill', '#F4A261')
+              .attr('fill', '#F4A261') // Group node color
               .attr('stroke', '#FFFFFF')
               .attr('stroke-width', 3)
               .transition()
@@ -256,9 +270,9 @@ const D3Canvas: React.FC = () => {
               .duration(1500)
               .delay(delay)
               .style('opacity', 1)
-              .text(d.id.replace('relation-', 'Relation '));
+              .text(d.name || 'Relation');
           } else {
-            // Nodes with node_id and node_img
+            // Other nodes with node_id and node_img
             currentNode
               .append('circle')
               .attr('r', 0)
@@ -298,7 +312,7 @@ const D3Canvas: React.FC = () => {
               .style('opacity', 1)
               .text(d.name || '');
         
-            // Hover animation for node_id nodes
+            // Hover animation for other nodes
             currentNode
               .on('mouseenter', function () {
                 currentNode
@@ -335,6 +349,7 @@ const D3Canvas: React.FC = () => {
         });
         
         
+        
   
       simulationRef.current = simulation;
   
@@ -359,3 +374,4 @@ const D3Canvas: React.FC = () => {
 };
 
 export default D3Canvas;
+
