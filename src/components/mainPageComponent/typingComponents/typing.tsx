@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import Profilename from '../typingComponents/profileName'
-import CategoryBox from '../typingComponents/categorySelection'
+import Profilename from './profileName'
+import CategoryBox from './categorySelection'
 import { motion } from 'framer-motion'
-import '../../Animation/Typing.css'
+import '../../../animation/typing.css'
 import axios from 'axios'
 
 type TypingProps = {

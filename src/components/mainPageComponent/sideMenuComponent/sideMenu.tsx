@@ -1,9 +1,9 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import Logo from '../../assets/Logo.png'
+import Logo from '../../../assets/Logo.png'
 import Log from '../sideMenuComponent/log'
-import LoginStatus from '../../modals/userModal/loginStatus'
+import LoginStatus from '../../../modals/userModal/loginStatus'
 
 type LogItem = {
   content: string
