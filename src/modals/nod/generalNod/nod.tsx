@@ -65,6 +65,7 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
   // 모달 닫기
   const handleClose = (): void => {
     console.log('모달 닫기 실행');
+    window.location.reload();
     setIsVisible(false);
     setTimeout(() => {
       onClose();

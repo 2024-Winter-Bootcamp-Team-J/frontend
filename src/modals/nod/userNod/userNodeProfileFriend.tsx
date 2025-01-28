@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Nod from '../generalNod/nod';
+import generalP from '../../../assets/generalP.png'; // 기본 이미지 import
 
 const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
   const [selectedNode, setSelectedNode] = useState<any>(null);
@@ -11,7 +12,12 @@ const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:8000/node');
-        setProfileData(response.data); // 노드 데이터를 설정
+        const dataWithDefaultImages = response.data.map((item: any) => ({
+          ...item,
+          node_img: item.node_img || generalP, // 기본 이미지 설정
+        }));
+        console.log('Profile data:', dataWithDefaultImages);
+        setProfileData(dataWithDefaultImages);
       } catch (error) {
         console.error('Error fetching profile data:', error);
       }
@@ -28,7 +34,6 @@ const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
     setSelectedNode(null);
   };
 
-  // 데이터를 동적으로 나누는 함수
   const chunkArray = (array: any[], chunkSize: number) => {
     const chunks = [];
     for (let i = 0; i < array.length; i += chunkSize) {
@@ -37,10 +42,7 @@ const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
     return chunks;
   };
 
-  // isExpanded에 따라 열의 개수 설정
   const columns = isExpanded ? 6 : 3;
-
-  // 데이터를 동적으로 나누기
   const chunkedData = chunkArray(profileData, columns);
 
   return (
@@ -57,18 +59,22 @@ const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
           >
             {row.map((item) => (
               <div
-                key={item.name}
-                className={`flex flex-col items-center justify-center w-full h-auto p-4 rounded-lg cursor-pointer hover:bg-gray-600 transition-all duration-200`}
+                key={item.node_id} // node_id를 key로 사용
+                className="flex flex-col items-center justify-center w-full h-auto p-4 transition-all duration-200 rounded-lg cursor-pointer hover:bg-gray-600"
                 onClick={() => handleClick(item)}
               >
-                <div
-                  className={`flex items-center justify-center w-20 h-20 mb-4 bg-gray-500 rounded-full`}
-                  style={{
-                    backgroundImage: `url(${item.node_img || '/path/to/default-profile.png'})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
-                ></div>
+                <div className="flex items-center justify-center w-20 h-20 mb-4">
+                  {/* <img> 태그로 이미지 렌더링 */}
+                  <img
+                    src={item.node_img} // 서버에서 받은 이미지 URL
+                    alt={`${item.name} Profile`}
+                    className="object-cover w-full h-full rounded-full"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = generalP; // 로드 실패 시 기본 이미지 설정
+                      console.error(`이미지 로드 실패: ${item.node_img}`);
+                    }}
+                  />
+                </div>
                 <div className="text-lg text-white">{item.name}</div>
               </div>
             ))}
@@ -85,7 +91,7 @@ const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
             relation_type_id: selectedNode.relation_type_ids || [],
             name: selectedNode.name,
             time: selectedNode.time,
-            node_id: selectedNode.node_id, // node_id 전달
+            node_id: selectedNode.node_id,
           }}
           onClose={handleClose}
         />

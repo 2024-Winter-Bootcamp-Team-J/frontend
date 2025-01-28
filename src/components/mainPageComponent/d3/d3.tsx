@@ -4,6 +4,7 @@ import axios from 'axios';
 import Nod from '../../../modals/nod/generalNod/nod';
 import UserNod from '../../../modals/nod/userNod/userNod';
 import { renderGraph } from './render';
+import generalP from '../../../assets/generalP.png'
 
 type D3Node = d3.SimulationNodeDatum & {
   id: string;
@@ -49,7 +50,7 @@ const D3Canvas: React.FC = () => {
         const userNode: D3Node = {
           id: 'User',
           name: 'User',
-          node_img: localStorage.getItem('profileImage') || '/path/to/default-profile.png',
+          node_img: localStorage.getItem('profileImage') || generalP,
           fx: 1500,
           fy: 1000,
         };
@@ -71,7 +72,7 @@ const D3Canvas: React.FC = () => {
           const nodeData = {
             id: item.name,
             name: item.name,
-            node_img: item.node_img || '/path/to/default-node-img.png', // Default node image
+            node_img: item.node_img || generalP, // Default node image
             relation_type_id: item.relation_type_ids,
             node_id: item.node_id,
             x: 1500 + (Math.random() - 0.5) * 300,
