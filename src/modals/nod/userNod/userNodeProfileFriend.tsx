@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Nod from './nod';
+import Nod from '../generalNod/nod';
 
 const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
   const [selectedNode, setSelectedNode] = useState<any>(null);
