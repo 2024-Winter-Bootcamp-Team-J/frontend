@@ -16,24 +16,34 @@ const NodImg: React.FC<NodImgProps> = ({ nodeImg, nodeId, onImageUpload }) => {
       const selectedFile = event.target.files[0];
       console.log('선택된 파일:', selectedFile);
 
+      // FormData 생성
       const formData = new FormData();
-      formData.append('image', selectedFile); // 서버의 요구 사항에 따라 설정
       formData.append('node_id', nodeId.toString()); // node_id를 문자열로 추가
-      console.log('FormData 내용:', Array.from(formData.entries()));
+      formData.append('node_img', selectedFile); // node_img 파일 추가
+      console.log('FormData 내용:', Array.from(formData.entries())); // FormData 확인
 
       try {
         console.log('이미지 업로드 요청 시작...');
         const response = await axios.post(
-          'http://localhost:8000/node/add-image',
+          'http://localhost:8000/node/add-image', // API URL
           formData,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data', // FormData 전송
+            },
+          }
         );
+
         console.log('서버 응답:', response.data);
 
         const uploadedImageUrl = response.data.image_url; // 서버에서 반환된 이미지 URL
-        setCurrentImg(uploadedImageUrl); // 로컬 상태 업데이트
-        onImageUpload(uploadedImageUrl); // 부모 컴포넌트에 전달
-        console.log('업로드된 이미지 URL:', uploadedImageUrl);
+        if (uploadedImageUrl) {
+          setCurrentImg(uploadedImageUrl); // 로컬 상태 업데이트
+          onImageUpload(uploadedImageUrl); // 부모 컴포넌트로 전달
+          console.log('업로드된 이미지 URL:', uploadedImageUrl);
+        } else {
+          console.error('서버에서 image_url을 반환하지 않았습니다.');
+        }
       } catch (error) {
         if (axios.isAxiosError(error)) {
           console.error('서버 응답 에러:', error.response?.data || error.message); // 서버 에러 디버깅

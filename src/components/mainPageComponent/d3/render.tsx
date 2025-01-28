@@ -212,12 +212,22 @@ export const renderGraph = (
         .attr('r', 60);
 
         if (d.node_img) {
+
+          currentNode
+          .append('clipPath') // clipPath 추가
+          .attr('id', `clip-${d.id}`)
+          .append('circle')
+          .attr('cx', 0)
+          .attr('cy', 0)
+          .attr('r', 60); // clipPath 반지름 설정
+
             currentNode
               .append('image')
               .attr('href', d.node_img) // 이미지를 추가하기 전에 d.node_img 확인
               .attr('width', 0)
               .attr('height', 0)
               .attr('clip-path', `url(#clip-${d.id})`)
+              .attr('preserveAspectRatio', 'xMidYMid slice')
               .attr('x', 0)
               .attr('y', 0)
               .transition()

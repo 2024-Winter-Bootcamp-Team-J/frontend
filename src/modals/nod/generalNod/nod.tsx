@@ -117,7 +117,7 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
 
         {/* 프로필 이미지 및 ID */}
         <div className="flex flex-col items-center w-full">
-          <NodImg nodeImg={nodeImg} nodeId={node.node_id!} onImageUpload={handleImageUpdate} />
+          <NodImg nodeImg={node.node_img || '/path/to/default-image.png'} nodeId={node.node_id!} onImageUpload={handleImageUpdate} />
           <h2 className="mt-4 text-2xl font-bold text-white">{node.id}</h2>
         </div>
 
