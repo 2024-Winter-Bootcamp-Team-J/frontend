@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 type GroupProps = {
   isCollapsed: boolean;
@@ -36,15 +37,15 @@ const Group: React.FC<GroupProps> = ({ isCollapsed, onCategorySelect }) => {
 
   return (
     <div ref={groupRef} className={`fixed w-[300px] ${isCollapsed ? '' : 'ml-[300px]'}`}>
-      <button onClick={() => setIsOpen(!isOpen)} className="w-full px-4 py-2 border-2 rounded-md">
-        그룹 목록 ▼
+      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full px-4 py-2 text-xl text-white border-2 rounded-t-lg border-recordColor bg-customColor/60 backdrop-blur-lg ">
+        그룹 목록 {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>
       {isOpen && (
-        <div className="bg-gray-700 border-2 rounded-md">
+        <div className="text-xl text-white border-2 rounded-b-xl bg-customColor/70 backdrop-blur-xl border-recordColor">
           {groupItems.map((item) => (
             <div
               key={item.id}
-              className="p-2 cursor-pointer hover:bg-gray-600"
+              className="p-3 cursor-pointer hover:bg-recordColor/70"
               onClick={() => onCategorySelect(item.name)}
             >
               {item.name}

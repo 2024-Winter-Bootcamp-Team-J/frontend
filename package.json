@@ -16,6 +16,7 @@
     "d3": "^7.9.0",
     "framer-motion": "^11.16.0",
     "js-cookie": "^3.0.5",
+    "lucide-react": "^0.474.0",
     "postcss": "^8.4.49",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
