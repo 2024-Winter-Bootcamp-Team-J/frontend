@@ -18,5 +18,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')], // ✅ 스크롤바 플러그인 추가
 }

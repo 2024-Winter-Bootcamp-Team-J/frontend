@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import UserIcon from '../../assets/UserIcon.png'
-
+import UserIcon from '../../../assets/UserIcon.png'
 interface Profile {
   id: string
   name: string

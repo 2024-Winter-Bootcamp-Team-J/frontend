@@ -53,11 +53,11 @@ export const renderGraph = (
     .forceSimulation<D3Node>(nodes)
     .force(
       'link',
-      d3.forceLink<D3Node, Link>(links).id((d) => d.id).distance(300)
+      d3.forceLink<D3Node, Link>(links).id((d) => d.id).distance(400)
     )
     .force('charge', d3.forceManyBody().strength(-1000))
     .force('center', d3.forceCenter(canvasWidth / 2, canvasHeight / 2))
-    .force('collision', d3.forceCollide(60))
+    .force('collision', d3.forceCollide(160))
     .alphaTarget(0.1)
     .on('tick', () => {
       g.selectAll<SVGLineElement, Link>('.link')
