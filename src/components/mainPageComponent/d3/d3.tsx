@@ -4,7 +4,8 @@ import axios from 'axios';
 import Nod from '../../../modals/nod/generalNod/nod';
 import UserNod from '../../../modals/nod/userNod/userNod';
 import { renderGraph } from './render';
-import generalP from '../../../assets/generalP.png'
+import Group from '../groups';
+import generalP from '../../../assets/generalP.png';
 
 type D3Node = d3.SimulationNodeDatum & {
   id: string;
@@ -25,28 +26,29 @@ type Link = d3.SimulationLinkDatum<D3Node> & {
   target: string | D3Node;
 };
 
-const D3Canvas: React.FC = () => {
-  const canvasRef = useRef<SVGSVGElement>(null!); // Assert non-null with `null!`
+type D3CanvasProps = {
+  selectedCategory: string;
+};
+
+const D3Canvas: React.FC<D3CanvasProps> = ({ selectedCategory }) => {
+  const canvasRef = useRef<SVGSVGElement>(null!);
   const [selectedNode, setSelectedNode] = useState<D3Node | null>(null);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [relationTypes, setRelationTypes] = useState<{ [key: number]: string }>({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('Fetching relation types...');
         const relationTypesResponse = await axios.get('http://localhost:8000/relations/types');
-        const relationTypes = relationTypesResponse.data.reduce((acc: { [key: number]: string }, item: any) => {
+        const types = relationTypesResponse.data.reduce((acc: { [key: number]: string }, item: any) => {
           acc[item.relation_type_id] = item.name;
           return acc;
         }, {});
-        console.log('Relation types fetched:', relationTypes);
+        setRelationTypes(types);
 
-        console.log('Fetching nodes...');
         const nodesResponse = await axios.get('http://localhost:8000/node');
         const apiData = nodesResponse.data;
-        console.log('Nodes fetched:', apiData);
 
-        // User node
         const userNode: D3Node = {
           id: 'User',
           name: 'User',
@@ -54,70 +56,74 @@ const D3Canvas: React.FC = () => {
           fx: 1500,
           fy: 1000,
         };
-        console.log('User node:', userNode);
 
-        // Relation group nodes
-        const groupNodes: D3Node[] = Array.from(
-          new Set(apiData.flatMap((item: any) => item.relation_type_ids as number[]))
-        ).map((relationId) => ({
-          id: `relation-${relationId as number}`,
-          name: relationTypes[relationId as number] || `Relation ${relationId}`,
-          x: 1500 + (Math.random() - 0.5) * 300,
-          y: 1000 + (Math.random() - 0.5) * 300,
-        }));
-        console.log('Group nodes:', groupNodes);
+        const uniqueRelationIds = new Set<number>(
+          apiData.flatMap((item: any) => (Array.isArray(item.relation_type_ids) ? item.relation_type_ids : []))
+        );
 
-        // Nodes with their metadata
-        const nodes: D3Node[] = apiData.map((item: any) => {
-          const nodeData = {
-            id: item.name,
-            name: item.name,
-            node_img: item.node_img || generalP, // Default node image
-            relation_type_id: item.relation_type_ids,
-            node_id: item.node_id,
+        const groupNodes: D3Node[] = Array.from(uniqueRelationIds).map((relationId) => {
+          const relationIdNumber = Number(relationId);
+          return {
+            id: `relation-${relationIdNumber}`,
+            name: relationTypes[relationIdNumber] || `Relation ${relationIdNumber}`,
             x: 1500 + (Math.random() - 0.5) * 300,
             y: 1000 + (Math.random() - 0.5) * 300,
           };
-          console.log('Processed node:', nodeData); // Log each node
-          return nodeData;
         });
 
-        // Links between nodes
+        const nodes: D3Node[] = apiData.map((item: any) => ({
+          id: item.name,
+          name: item.name,
+          node_img: item.node_img || generalP,
+          relation_type_id: item.relation_type_ids,
+          node_id: item.node_id,
+          x: 1500 + (Math.random() - 0.5) * 300,
+          y: 1000 + (Math.random() - 0.5) * 300,
+        }));
+
+        let filteredNodes = [userNode, ...groupNodes, ...nodes];
+
+        if (selectedCategory !== '전체') {
+          const categoryId = Number(Object.keys(relationTypes).find(key => relationTypes[Number(key)] === selectedCategory));
+          filteredNodes = [
+            userNode,
+            ...groupNodes.filter(group => group.id === `relation-${categoryId}`),
+            ...nodes.filter(node => node.relation_type_id?.includes(categoryId))
+          ];
+        }
+
         const links: Link[] = [];
-        groupNodes.forEach((groupNode) => links.push({ source: userNode.id, target: groupNode.id }));
-        nodes.forEach((node) => {
-          node.relation_type_id?.forEach((relationId) => {
-            const groupNode = groupNodes.find((group) => group.id === `relation-${relationId}`);
-            if (groupNode) links.push({ source: groupNode.id, target: node.id });
-          });
+        filteredNodes.forEach((node) => {
+          if (node.id.startsWith('relation-')) {
+            links.push({ source: 'User', target: node.id });
+          } else if (node.relation_type_id) {
+            node.relation_type_id.forEach((relationId) => {
+              if (filteredNodes.some(n => n.id === `relation-${relationId}`)) {
+                links.push({ source: `relation-${relationId}`, target: node.id });
+              }
+            });
+          }
         });
-        console.log('Links:', links);
 
-        // Combine all nodes
-        const allNodes = [userNode, ...groupNodes, ...nodes];
-        console.log('All nodes for rendering:', allNodes);
-
-        renderGraph(canvasRef, allNodes, links, setSelectedNode, setIsUserModalOpen);
+        renderGraph(canvasRef, filteredNodes, links, setSelectedNode, setIsUserModalOpen);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [selectedCategory]);
 
   return (
     <>
       <svg ref={canvasRef} className="fixed top-0 left-0 z-10"></svg>
-      {/* User modal */}
       {isUserModalOpen && <UserNod node={{ id: 'User', name: 'User' }} onClose={() => setIsUserModalOpen(false)} />}
-      {/* Node modal with selected node */}
       {selectedNode && (
         <Nod
           node={{
             id: selectedNode.id,
             name: selectedNode.name,
-            node_img: selectedNode.node_img, // Pass node_img
+            node_img: selectedNode.node_img,
             relation_type_id: selectedNode.relation_type_id,
             node_id: selectedNode.node_id,
             memo: selectedNode.memo,
