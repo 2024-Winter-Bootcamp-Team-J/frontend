@@ -18,7 +18,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [displayText, setDisplayText] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 단일 선택
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [categories, setCategories] = useState(['친구', '가족', '게임', '지인', '직장']) // 초기 카테고리
   const [animationActive, setAnimationActive] = useState(true)
   const [isFadingOut, setIsFadingOut] = useState(false)
@@ -93,7 +93,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleConfirm = async () => {
     console.log('Confirm Button Clicked')
-    if (!selectedNodeId || !selectedCategory) {
+    if (!selectedNodeId || selectedCategories.length === 0) {
       console.error('No node selected or no category selected.')
       return
     }
@@ -107,19 +107,23 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         직장: 5,
       }
 
-      const relationTypeId = relationTypeMapping[selectedCategory]
-      if (!relationTypeId) {
-        console.error(`Invalid category: ${selectedCategory}`)
+      const relationTypeIds = selectedCategories.map((category) => relationTypeMapping[category]).filter(Boolean)
+
+      if (relationTypeIds.length === 0) {
+        console.error('Invalid categories:', selectedCategories)
         return
       }
 
-      const response = await axios.post('http://localhost:8000/relations/user-node-relations/create', {
-        user_id: 1,
-        node_id: selectedNodeId,
-        relation_type_id: relationTypeId,
-      })
+      for (const relationTypeId of relationTypeIds) {
+        await axios.post('http://localhost:8000/relations/user-node-relations/create', {
+          user_id: 1,
+          node_id: selectedNodeId,
+          relation_type_id: relationTypeId,
+        })
 
-      console.log('Relation API Response:', response.data)
+      }
+
+
       handleClose()
     } catch (error: any) {
       console.error('Error sending relation data:', error.message)
@@ -142,7 +146,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   useEffect(() => {
     console.log('selectedNodeId changed:', selectedNodeId)
     if (!selectedNodeId) {
-      setSelectedCategory(null)
+      setSelectedCategories([])
     }
   }, [selectedNodeId])
 
@@ -166,13 +170,18 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleCategorySelect = (category: string) => {
     console.log('Category Selected:', category)
-    setSelectedCategory(category)
+  
+    setSelectedCategories((prevSelected) =>
+      prevSelected.includes(category)
+        ? prevSelected.filter((c) => c !== category) // ✅ 이미 선택된 경우 해제
+        : [...prevSelected, category] // ✅ 선택되지 않은 경우 추가
+    )
   }
-
+  
   const handleCategoryAdd = (newCategory: string) => {
     console.log('New Category Added:', newCategory)
     setCategories((prevCategories) => [...prevCategories, newCategory])
-    setSelectedCategory(newCategory)
+    setSelectedCategories([])
   }
 
   return (
@@ -243,13 +252,16 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
-                    <CategoryBox
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      onCategorySelect={handleCategorySelect}
-                      onCategoryAdd={handleCategoryAdd}
-                      currentNodeId={selectedNodeId}
-                    />
+                  <CategoryBox
+  categories={categories}
+  selectedCategories={selectedCategories}
+  onCategoriesSelect={(newCategories) => setSelectedCategories(newCategories)} // ✅ 배열을 직접 전달하도록 수정
+  onCategoryAdd={handleCategoryAdd}
+  currentNodeId={selectedNodeId}
+/>
+
+
+
                   </div>
                   <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleConfirm}>
                     확인
