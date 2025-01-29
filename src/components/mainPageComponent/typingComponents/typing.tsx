@@ -93,6 +93,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleConfirm = async () => {
     console.log('Confirm Button Clicked')
+    
     if (!selectedNodeId || selectedCategories.length === 0) {
       console.error('No node selected or no category selected.')
       return
@@ -125,6 +126,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
 
       handleClose()
+      window.location.reload()
     } catch (error: any) {
       console.error('Error sending relation data:', error.message)
     }
@@ -253,15 +255,12 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
                   <CategoryBox
-  categories={categories}
-  selectedCategories={selectedCategories}
-  onCategoriesSelect={(newCategories) => setSelectedCategories(newCategories)} // ✅ 배열을 직접 전달하도록 수정
-  onCategoryAdd={handleCategoryAdd}
-  currentNodeId={selectedNodeId}
-/>
-
-
-
+                    categories={categories}
+                    selectedCategories={selectedCategories}
+                    onCategoriesSelect={(newCategories) => setSelectedCategories(newCategories)} // ✅ 배열을 직접 전달하도록 수정
+                    onCategoryAdd={handleCategoryAdd}
+                    currentNodeId={selectedNodeId}
+                  />
                   </div>
                   <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleConfirm}>
                     확인
