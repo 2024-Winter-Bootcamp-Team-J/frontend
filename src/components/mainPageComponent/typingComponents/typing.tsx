@@ -19,12 +19,35 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [inputValue, setInputValue] = useState('')
   const [displayText, setDisplayText] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [categories, setCategories] = useState(['친구', '가족', '게임', '지인', '직장']) // 초기 카테고리
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]) // ✅ 초기값 수정
   const [animationActive, setAnimationActive] = useState(true)
   const [isFadingOut, setIsFadingOut] = useState(false)
   const [isFirstBoxFadingOut, setIsFirstBoxFadingOut] = useState(false)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<{ id: string; name: string; icon: string }[]>([]) // 동적 프로필 데이터
+
+
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/relations/types');
+        console.log('카테고리 API 응답:', response.data);
+  
+        const categoryList = response.data.map((item: { relation_type_id: number; name: string }) => ({
+          id: item.relation_type_id, // ✅ relation_type_id → id
+          name: item.name, // ✅ name 유지
+        }));
+  
+        setCategories(categoryList); // ✅ 업데이트
+      } catch (error) {
+        console.error('카테고리 데이터를 불러오는 중 오류 발생:', error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
+  
 
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
@@ -93,22 +116,17 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleConfirm = async () => {
     console.log('Confirm Button Clicked')
-    
+
     if (!selectedNodeId || selectedCategories.length === 0) {
       console.error('No node selected or no category selected.')
       return
     }
 
     try {
-      const relationTypeMapping: { [key: string]: number } = {
-        친구: 1,
-        가족: 2,
-        게임: 3,
-        지인: 4,
-        직장: 5,
-      }
-
-      const relationTypeIds = selectedCategories.map((category) => relationTypeMapping[category]).filter(Boolean)
+      // ✅ 선택한 카테고리 이름을 ID로 변환
+      const relationTypeIds = selectedCategories
+        .map((categoryName) => categories.find((c) => c.name === categoryName)?.id)
+        .filter((id): id is number => id !== undefined) // ✅ undefined 제거
 
       if (relationTypeIds.length === 0) {
         console.error('Invalid categories:', selectedCategories)
@@ -117,13 +135,11 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
       for (const relationTypeId of relationTypeIds) {
         await axios.post('http://localhost:8000/relations/user-node-relations/create', {
-          user_id: 1,
+          user_id: 1, // TODO: 실제 로그인된 사용자 ID로 변경
           node_id: selectedNodeId,
-          relation_type_id: relationTypeId,
+          relation_type_id: relationTypeId, // ✅ API에서 받은 relation_type_id 사용
         })
-
       }
-
 
       handleClose()
       window.location.reload()
@@ -182,7 +198,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   
   const handleCategoryAdd = (newCategory: string) => {
     console.log('New Category Added:', newCategory)
-    setCategories((prevCategories) => [...prevCategories, newCategory])
+    setCategories((prevCategories) => [...prevCategories, { id: -1, name: newCategory }])
     setSelectedCategories([])
   }
 
@@ -255,7 +271,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
                   <CategoryBox
-                    categories={categories}
+                    categories={Array.from(new Set(categories.map((c) => c.name)))}
                     selectedCategories={selectedCategories}
                     onCategoriesSelect={(newCategories) => setSelectedCategories(newCategories)} // ✅ 배열을 직접 전달하도록 수정
                     onCategoryAdd={handleCategoryAdd}
