@@ -4,7 +4,6 @@ import axios from 'axios';
 import Nod from '../../../modals/nod/generalNod/nod';
 import UserNod from '../../../modals/nod/userNod/userNod';
 import { renderGraph } from './render';
-import Group from '../groups';
 import generalP from '../../../assets/generalP.png';
 
 type D3Node = d3.SimulationNodeDatum & {
@@ -65,7 +64,7 @@ const D3Canvas: React.FC<D3CanvasProps> = ({ selectedCategory }) => {
           const relationIdNumber = Number(relationId);
           return {
             id: `relation-${relationIdNumber}`,
-            name: relationTypes[relationIdNumber] || `Relation ${relationIdNumber}`,
+            name: types[relationIdNumber] || `Unknown Relation`,
             x: 1500 + (Math.random() - 0.5) * 300,
             y: 1000 + (Math.random() - 0.5) * 300,
           };
@@ -84,7 +83,7 @@ const D3Canvas: React.FC<D3CanvasProps> = ({ selectedCategory }) => {
         let filteredNodes = [userNode, ...groupNodes, ...nodes];
 
         if (selectedCategory !== '전체') {
-          const categoryId = Number(Object.keys(relationTypes).find(key => relationTypes[Number(key)] === selectedCategory));
+          const categoryId = Number(Object.keys(types).find(key => types[Number(key)] === selectedCategory));
           filteredNodes = [
             userNode,
             ...groupNodes.filter(group => group.id === `relation-${categoryId}`),
