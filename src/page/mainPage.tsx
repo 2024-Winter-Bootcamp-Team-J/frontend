@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import SideMenuBar from '../components/mainPageComponent/sideMenuComponent/sideMenu'
 import Group from '../components/mainPageComponent/groups'
 // import Search from '../components/mainPageComponent/search'
-import Typing from '../components/mainPageComponent/typingComponents/typing'
+import Typing from '../components/mainPageComponent/typingComponents/typing/typing'
 import D3Canvas from '../components/mainPageComponent/d3/d3'
 import LocationButton from '../components/mainPageComponent/locationButton'
 

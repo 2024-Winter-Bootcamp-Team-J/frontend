@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NodeMemo from './nodMemo';
 import NodImg from './nodImg';
+import '../../../index.css'
 
 interface NodProps {
   node: {
@@ -21,8 +22,48 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [nodeImg, setNodeImg] = useState<string | undefined>(node?.node_img);
   const [memos, setMemos] = useState<{ memo_id: number; content: string; created_at: string }[]>([]);
+  const [relationTypes, setRelationTypes] = useState<{ [key: number]: string }>({});
 
-  // 화면 열릴 때 body 스크롤 비활성화
+  // ✅ relation_type_id 별 관계명 가져오기 (중복 제거)
+  useEffect(() => {
+    const fetchRelationTypes = async () => {
+      if (!node?.relation_type_id || node.relation_type_id.length === 0) {
+        console.log('❌ 관계 유형 ID 없음');
+        return;
+      }
+
+      try {
+        const typeMap: { [key: number]: string } = {};
+
+        await Promise.all(
+          node.relation_type_id.map(async (id) => {
+            try {
+              const response = await axios.get(`http://localhost:8000/relations/types/${id}`);
+              console.log(`📌 관계 유형 응답 (${id}):`, response.data);
+
+              if (response.data && response.data.name) {
+                typeMap[id] = response.data.name;
+              } else {
+                console.warn(`⚠️ ID ${id} 관계명 없음, 기본값 사용`);
+                typeMap[id] = '알 수 없음';
+              }
+            } catch (error) {
+              console.error(`❌ ID ${id} 관계 유형 요청 실패:`, error);
+              typeMap[id] = '에러 발생';
+            }
+          })
+        );
+
+        console.log('📌 최종 관계 유형:', typeMap);
+        setRelationTypes(typeMap);
+      } catch (error) {
+        console.error('❌ 관계 유형 데이터 가져오기 실패:', error);
+      }
+    };
+
+    fetchRelationTypes();
+  }, [node?.relation_type_id]);
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -30,41 +71,30 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
     };
   }, []);
 
-  // 모달이 표시되도록 설정
   useEffect(() => {
-    console.log('모달 표시: node 데이터 확인', node); // 디버깅: 초기 node 데이터 확인
     setIsVisible(true);
   }, []);
 
-  // 메모 데이터 가져오기
   useEffect(() => {
     if (node?.node_id) {
       const fetchMemos = async () => {
         try {
           const url = `http://localhost:8000/memos/memoListByUser/${node.node_id}`;
-          console.log('메모 데이터 요청 URL:', url);
           const response = await axios.get(url);
-          console.log('메모 데이터 응답:', response.data);
           setMemos(response.data);
         } catch (error) {
           console.error('메모 데이터를 가져오는 중 오류 발생:', error);
         }
       };
       fetchMemos();
-    } else {
-      console.log('node_id가 없습니다. 메모 데이터를 가져올 수 없습니다.');
     }
   }, [node?.node_id]);
 
-  // 이미지 업로드 후 업데이트
   const handleImageUpdate = (newImageUrl: string) => {
-    console.log('업데이트된 node_img URL:', newImageUrl); // 디버깅: 새로운 이미지 URL 확인
     setNodeImg(newImageUrl);
   };
 
-  // 모달 닫기
   const handleClose = (): void => {
-    console.log('모달 닫기 실행');
     window.location.reload();
     setIsVisible(false);
     setTimeout(() => {
@@ -72,22 +102,18 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
     }, 300);
   };
 
-  // 모달 확장
   const handleExpand = (): void => {
-    console.log('모달 확장 실행');
     setIsExpanded(false);
   };
 
-  // 모달 축소
   const handleShrink = (): void => {
-    console.log('모달 축소 실행');
     setIsExpanded(true);
   };
 
-  if (!node) {
-    console.log('노드 데이터가 없습니다.');
-    return null;
-  }
+  if (!node) return null;
+
+  // ✅ 중복 제거된 관계 유형 목록 생성
+  const uniqueCategories = Array.from(new Set(Object.values(relationTypes)));
 
   return (
     <div
@@ -118,12 +144,26 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
 
         {/* 프로필 이미지 및 ID */}
         <div className="flex flex-col items-center w-full">
-          <NodImg nodeImg={node.node_img || '/path/to/default-image.png'} nodeId={node.node_id!} onImageUpload={handleImageUpdate} />
+          <NodImg nodeImg={nodeImg || '/path/to/default-image.png'} nodeId={node.node_id!} onImageUpload={handleImageUpdate} />
           <h2 className="mt-4 text-2xl font-bold text-white">{node.id}</h2>
         </div>
 
+        {/* ✅ 카테고리 UI (중복 제거) */}
+        <div className="flex flex-wrap justify-center gap-2 mt-3">
+          {uniqueCategories.length > 0 ? (
+            uniqueCategories.map((category, index) => (
+              <span key={index} className="px-3 py-1 mt-4 text-sm text-white border-2 border-white rounded-full">
+                {category}
+              </span>
+            ))
+          ) : (
+            <span className="text-sm text-gray-400">관계 없음</span>
+          )}
+        </div>
+
         {/* 메모 목록 */}
-        <div className="flex flex-col w-full mt-6 text-white">
+        <div className='w-full mt-6 text-3xl text-white border-b-2'>메모</div>
+        <div className="flex flex-col w-full mt-6 mb-4 overflow-y-auto text-white transition-opacity duration-300 scrollbar-hidden">
           {memos.length > 0 ? (
             <NodeMemo memos={memos} />
           ) : (

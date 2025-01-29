@@ -4,7 +4,7 @@ import axios from 'axios'
 type CategoryBoxProps = {
   categories: string[]
   selectedCategories: string[] // 여러 개 선택 가능
-  onCategoriesSelect: (categories: string[]) => void
+  onCategoriesSelect: React.Dispatch<React.SetStateAction<string[]>>
   onCategoryAdd: (newCategory: string) => void
   currentNodeId: string | null // 선택된 노드 ID
 }
