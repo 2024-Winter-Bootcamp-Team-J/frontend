@@ -1,73 +1,60 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 type GroupProps = {
-  isCollapsed: boolean
-  onCategorySelect: (category: string) => void // 새로운 prop 추가
-}
+  isCollapsed: boolean;
+  onCategorySelect: (category: string) => void;
+};
 
 const Group: React.FC<GroupProps> = ({ isCollapsed, onCategorySelect }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const groupRef = useRef<HTMLDivElement>(null) // 참조를 사용해 외부 클릭 감지
+  const [isOpen, setIsOpen] = useState(false);
+  const [groupItems, setGroupItems] = useState<{ id: number; name: string }[]>([]);
+  const groupRef = useRef<HTMLDivElement>(null);
 
-  // 그룹 항목 데이터
-  const groupItems = ['전체', '가족', '친구', '게임', '지인', '직장'] // "전체" 추가
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/relations/types');
+        const categories = response.data.map((item: any) => ({ id: item.relation_type_id, name: item.name }));
+        setGroupItems([{ id: -1, name: '전체' }, ...categories]);
+      } catch (error) {
+        console.error('Error fetching relation types:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen)
-  }
-
-  const closeDropdown = () => {
-    setIsOpen(false)
-  }
-
-  // 화면 외부 클릭 감지
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (groupRef.current && !groupRef.current.contains(event.target as Node)) {
-        closeDropdown()
+        setIsOpen(false);
       }
-    }
-
-    document.addEventListener('mousedown', handleOutsideClick)
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick)
-    }
-  }, [])
-
-  const handleItemClick = (category: string) => {
-    onCategorySelect(category) // 선택된 카테고리를 상위 컴포넌트로 전달
-    closeDropdown() // 드롭다운 닫기
-  }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   return (
-    <div ref={groupRef} className={`fixed transition-all duration-300 w-[300px] ${isCollapsed ? '' : 'ml-[300px]'}`}>
-      {!isOpen ? (
-        // 버튼 상태
-        <button
-          onClick={toggleDropdown}
-          className="w-full px-4 py-2 text-left text-white transition-all duration-500 ease-in-out border-2 rounded-md shadow-lg border-customColor2 bg-customColor/70 backdrop-blur-md hover:bg-customColor2/70"
-        >
-          <div className="flex items-center justify-between">
-            <span>그룹 목록</span>
-            <span className="transition-transform duration-300 ease-in-out transform">▼</span>
-          </div>
-        </button>
-      ) : (
-        // 드롭다운 상태
-        <div className="border-2 rounded-md shadow-lg bg-customColor2/70 border-customColor2 backdrop-blur-md">
-          {groupItems.map((item, index) => (
+    <div ref={groupRef} className={`fixed w-[300px] ${isCollapsed ? '' : 'ml-[300px]'}`}>
+      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full px-4 py-2 text-xl text-white border-2 rounded-t-lg border-recordColor bg-customColor/60 backdrop-blur-lg ">
+        그룹 목록 {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+      </button>
+      {isOpen && (
+        <div className="text-xl text-white border-2 rounded-b-xl bg-customColor/70 backdrop-blur-xl border-recordColor">
+          {groupItems.map((item) => (
             <div
-              key={index}
-              className="p-2 text-white cursor-pointer hover:bg-customColor"
-              onClick={() => handleItemClick(item)} // 선택 시 카테고리 전달
+              key={item.id}
+              className="p-3 cursor-pointer hover:bg-recordColor/70"
+              onClick={() => onCategorySelect(item.name)}
             >
-              {item}
+              {item.name}
             </div>
           ))}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Group
+export default Group;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import Profilename from '../typingComponents/profileName'
-import CategoryBox from '../typingComponents/categorySelection'
+import Profilename from './profileName'
+import CategoryBox from './categorySelection'
 import { motion } from 'framer-motion'
-import '../../Animation/Typing.css'
+import '../../../animation/typing.css'
 import axios from 'axios'
 
 type TypingProps = {
@@ -18,13 +18,36 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [displayText, setDisplayText] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null) // 단일 선택
-  const [categories, setCategories] = useState(['친구', '가족', '게임', '지인', '직장']) // 초기 카테고리
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]) // ✅ 초기값 수정
   const [animationActive, setAnimationActive] = useState(true)
   const [isFadingOut, setIsFadingOut] = useState(false)
   const [isFirstBoxFadingOut, setIsFirstBoxFadingOut] = useState(false)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<{ id: string; name: string; icon: string }[]>([]) // 동적 프로필 데이터
+
+
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/relations/types');
+        console.log('카테고리 API 응답:', response.data);
+  
+        const categoryList = response.data.map((item: { relation_type_id: number; name: string }) => ({
+          id: item.relation_type_id, // ✅ relation_type_id → id
+          name: item.name, // ✅ name 유지
+        }));
+  
+        setCategories(categoryList); // ✅ 업데이트
+      } catch (error) {
+        console.error('카테고리 데이터를 불러오는 중 오류 발생:', error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
+  
 
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
@@ -93,34 +116,33 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleConfirm = async () => {
     console.log('Confirm Button Clicked')
-    if (!selectedNodeId || !selectedCategory) {
+
+    if (!selectedNodeId || selectedCategories.length === 0) {
       console.error('No node selected or no category selected.')
       return
     }
 
     try {
-      const relationTypeMapping: { [key: string]: number } = {
-        친구: 1,
-        가족: 2,
-        게임: 3,
-        지인: 4,
-        직장: 5,
-      }
+      // ✅ 선택한 카테고리 이름을 ID로 변환
+      const relationTypeIds = selectedCategories
+        .map((categoryName) => categories.find((c) => c.name === categoryName)?.id)
+        .filter((id): id is number => id !== undefined) // ✅ undefined 제거
 
-      const relationTypeId = relationTypeMapping[selectedCategory]
-      if (!relationTypeId) {
-        console.error(`Invalid category: ${selectedCategory}`)
+      if (relationTypeIds.length === 0) {
+        console.error('Invalid categories:', selectedCategories)
         return
       }
 
-      const response = await axios.post('http://localhost:8000/relations/user-node-relations/create', {
-        user_id: 1,
-        node_id: selectedNodeId,
-        relation_type_id: relationTypeId,
-      })
+      for (const relationTypeId of relationTypeIds) {
+        await axios.post('http://localhost:8000/relations/user-node-relations/create', {
+          user_id: 1, // TODO: 실제 로그인된 사용자 ID로 변경
+          node_id: selectedNodeId,
+          relation_type_id: relationTypeId, // ✅ API에서 받은 relation_type_id 사용
+        })
+      }
 
-      console.log('Relation API Response:', response.data)
       handleClose()
+      window.location.reload()
     } catch (error: any) {
       console.error('Error sending relation data:', error.message)
     }
@@ -142,7 +164,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   useEffect(() => {
     console.log('selectedNodeId changed:', selectedNodeId)
     if (!selectedNodeId) {
-      setSelectedCategory(null)
+      setSelectedCategories([])
     }
   }, [selectedNodeId])
 
@@ -166,13 +188,18 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleCategorySelect = (category: string) => {
     console.log('Category Selected:', category)
-    setSelectedCategory(category)
+  
+    setSelectedCategories((prevSelected) =>
+      prevSelected.includes(category)
+        ? prevSelected.filter((c) => c !== category) // ✅ 이미 선택된 경우 해제
+        : [...prevSelected, category] // ✅ 선택되지 않은 경우 추가
+    )
   }
-
+  
   const handleCategoryAdd = (newCategory: string) => {
     console.log('New Category Added:', newCategory)
-    setCategories((prevCategories) => [...prevCategories, newCategory])
-    setSelectedCategory(newCategory)
+    setCategories((prevCategories) => [...prevCategories, { id: -1, name: newCategory }])
+    setSelectedCategories([])
   }
 
   return (
@@ -243,13 +270,13 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
-                    <CategoryBox
-                      categories={categories}
-                      selectedCategory={selectedCategory}
-                      onCategorySelect={handleCategorySelect}
-                      onCategoryAdd={handleCategoryAdd}
-                      currentNodeId={selectedNodeId}
-                    />
+                  <CategoryBox
+                    categories={Array.from(new Set(categories.map((c) => c.name)))}
+                    selectedCategories={selectedCategories}
+                    onCategoriesSelect={(newCategories) => setSelectedCategories(newCategories)} // ✅ 배열을 직접 전달하도록 수정
+                    onCategoryAdd={handleCategoryAdd}
+                    currentNodeId={selectedNodeId}
+                  />
                   </div>
                   <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleConfirm}>
                     확인

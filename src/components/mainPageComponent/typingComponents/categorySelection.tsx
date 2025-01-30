@@ -3,13 +3,13 @@ import axios from 'axios'
 
 type CategoryBoxProps = {
   categories: string[]
-  selectedCategory: string | null
-  onCategorySelect: (category: string) => void
+  selectedCategories: string[] // 여러 개 선택 가능
+  onCategoriesSelect: React.Dispatch<React.SetStateAction<string[]>>
   onCategoryAdd: (newCategory: string) => void
   currentNodeId: string | null // 선택된 노드 ID
 }
 
-const CategoryBox: React.FC<CategoryBoxProps> = ({ categories = [], selectedCategory = null, onCategorySelect, onCategoryAdd, currentNodeId }) => {
+const CategoryBox: React.FC<CategoryBoxProps> = ({ categories = [], selectedCategories = [], onCategoriesSelect, onCategoryAdd, currentNodeId }) => {
   const [newCategory, setNewCategory] = useState('')
   const [isInputVisible, setIsInputVisible] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -56,19 +56,19 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories = [], selectedCate
   }
 
   const handleCategoryClick = (category: string) => {
-    if (selectedCategory === category) {
-      // 동일 카테고리를 선택한 경우 선택 해제
-      onCategorySelect('')
+    if (selectedCategories.includes(category)) {
+      // 이미 선택된 경우 -> 해제
+      onCategoriesSelect(selectedCategories.filter((c) => c !== category))
     } else {
-      // 새로운 카테고리 선택
-      onCategorySelect(category)
+      // 새로 선택된 경우 -> 추가
+      onCategoriesSelect([...selectedCategories, category])
     }
   }
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 mx-4 mb-4">
       {/* 현재 선택된 노드 표시 */}
-      {currentNodeId && <div className="mb-2 text-lg text-white">카테고리 선택</div>}
+      {currentNodeId && <div className="mb-2 text-3xl text-white">카테고리 선택</div>}
 
       {/* Grid 레이아웃 적용 */}
       <div className="grid grid-cols-5 gap-4">
@@ -76,17 +76,19 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories = [], selectedCate
           <div
             key={category}
             onClick={() => handleCategoryClick(category)}
-            className="relative flex items-center justify-center p-2 text-lg font-bold text-white transition-all duration-300 cursor-pointer "
+            className="relative flex items-center justify-center p-2 text-lg font-bold text-white transition-all duration-300 cursor-pointer"
           >
             <div
-              className={`z-50 ${selectedCategory === category ? 'border-blue-500' : ''} `}
+              className={`z-50 ${selectedCategories.includes(category) ? 'border-blue-500' : ''} `}
               style={{
                 transition: 'border 0.3s ease',
               }}
             >
               {category}
             </div>
-            {selectedCategory === category && <div className="absolute inset-0 bg-blue-500 rounded-lg blur-md" style={{ filter: 'blur(5px)' }} />}
+            {selectedCategories.includes(category) && (
+              <div className="absolute inset-0 bg-blue-500 rounded-lg blur-md" style={{ filter: 'blur(5px)' }} />
+            )}
           </div>
         ))}
 
