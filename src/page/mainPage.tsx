@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import SideMenuBar from '../components/mainPageComponent/sideMenu'
 import Group from '../components/mainPageComponent/groups'
-// import Search from '../components/mainPageComponent/search'
+import Search from '../components/mainPageComponent/search'
 import Typing from '../components/mainPageComponent/typing'
 import D3Canvas from '../components/mainPageComponent/d3'
 import LocationButton from '../components/mainPageComponent/locationButton'
@@ -38,9 +38,9 @@ const MainPage: React.FC = () => {
         <D3Canvas />
       </div>
 
-      {/* <div className="fixed z-40 top-10 right-10">
+      <div className="fixed z-40 top-10 right-10">
         <Search />
-      </div> */}
+      </div>
 
       <div className="fixed z-30 top-10 left-10">
         <Group isCollapsed={isCollapsed} onCategorySelect={(category) => console.log(category)} />
