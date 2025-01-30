@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../../../assets/Logo.png'
@@ -14,34 +14,11 @@ type LogItem = {
 type SideMenuBarProps = {
   isCollapsed: boolean
   setIsCollapsed: Dispatch<SetStateAction<boolean>>
-  logs: LogItem[];  // `logs` 속성 추가
+  logs: LogItem[] // 로그 리스트
 }
 
-const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed, logs }) => {  // `logs` 속성 받기
-  const [logsState, setLogsState] = useState<LogItem[]>(logs);  // 상태로 설정
-
+const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed, logs }) => {
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const storedLogs = localStorage.getItem('logs')
-        if (storedLogs) {
-          setLogsState(JSON.parse(storedLogs))
-        }
-      } catch (error) {
-        console.error('로그 데이터를 가져오는 중 오류 발생:', error)
-      }
-    }
-
-    fetchLogs()
-  }, [])
-
-  useEffect(() => {
-    if (logsState.length > 0) {
-      localStorage.setItem('logs', JSON.stringify(logsState))  // 로그 데이터를 로컬스토리지에 저장
-    }
-  }, [logsState])
 
   const handleLogout = () => {
     navigate('/')
@@ -68,7 +45,8 @@ const SideMenuBar: React.FC<SideMenuBarProps> = ({ isCollapsed, setIsCollapsed, 
 
             {/* 로그 출력 */}
             <div className="z-40 overflow-y-auto h-[750px] relative">
-              {logsState.map((log, index) => {
+              {logs.map((log, index) => {
+                console.log('Log ${index} Data:', log) // 로그 데이터 출력
                 return (
                   <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} transition={{ duration: 0.3 }}>
                     <Log content={log.content} name={log.name} createdAt={log.createdAt} />

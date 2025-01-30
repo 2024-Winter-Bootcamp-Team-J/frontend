@@ -52,7 +52,7 @@ const Search: React.FC = () => {
     <div className="relative">
       {/* 검색 입력창 */}
       <div
-        className={`flex items-center h-[48px] transition-all duration-500 ease-in-out border-2 shadow-lg rounded-md border-customColor2 bg-customColor/70 backdrop-blur-md hover:bg-customColor2/70`}
+        className={`flex items-center h-[44px] transition-all duration-500 ease-in-out border-2 shadow-lg rounded-md border-customColor2 bg-customColor/70 backdrop-blur-md hover:bg-customColor2/70`}
         style={{
           width: isFocused ? '500px' : '300px', // 좌측으로 길어지게 설정
           right: '0px', // 우측 고정
@@ -64,7 +64,7 @@ const Search: React.FC = () => {
           placeholder="검색"
           value={query}
           onChange={(e) => setQuery(e.target.value)} // 검색어 상태 업데이트
-          className="flex-grow py-2 ml-3 text-xl text-white placeholder-white bg-transparent focus:outline-none"
+          className="flex-grow py-2 ml-3 text-2xl text-white placeholder-white bg-transparent focus:outline-none"
           onFocus={handleFocus} // 포커스 시 상태 변경
           onBlur={handleBlur} // 포커스 해제 시 상태 변경
         />
