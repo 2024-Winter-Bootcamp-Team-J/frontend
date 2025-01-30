@@ -5,7 +5,7 @@ import Group from '../components/mainPageComponent/groups'
 import Typing from '../components/mainPageComponent/typingComponents/typing'
 import D3Canvas from '../components/mainPageComponent/d3/d3'
 import LocationButton from '../components/mainPageComponent/locationButton'
-// import Search from '../components/mainPageComponent/search'
+import Search from '../components/mainPageComponent/search'
 
 type Log = {
   createdAt: string;
@@ -32,10 +32,9 @@ const MainPage: React.FC = () => {
       <div className="fixed top-0 left-0 z-40">
         <SideMenuBar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} logs={logs} />
       </div>
-
-  {/* <div className="fixed z-40 top-10 right-10">
+      <div className="fixed z-40 top-10 right-10">
         <Search />
-      </div> */}
+      </div>
 
       <div className="absolute inset-0">
         <D3Canvas selectedCategory={selectedCategory} /> {/* ✅ 선택된 카테고리 전달 */}
