@@ -26,28 +26,27 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<{ id: string; name: string; icon: string }[]>([]) // 동적 프로필 데이터
 
-
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/relations/types');
-        console.log('카테고리 API 응답:', response.data);
-  
+        const response = await axios.get('http://localhost:8000/relations/types')
+        console.log('카테고리 API 응답:', response.data)
+
         const categoryList = response.data.map((item: { relation_type_id: number; name: string }) => ({
           id: item.relation_type_id, // ✅ relation_type_id → id
           name: item.name, // ✅ name 유지
-        }));
-  
-        setCategories(categoryList); // ✅ 업데이트
+        }))
+
+        setCategories(categoryList) // ✅ 업데이트
       } catch (error) {
-        console.error('카테고리 데이터를 불러오는 중 오류 발생:', error);
+        console.error('카테고리 데이터를 불러오는 중 오류 발생:', error)
       }
-    };
-  
-    fetchCategories();
-  }, []);
-  
+    }
+
+    fetchCategories()
+  }, [])
+
+  const token = localStorage.getItem('accessToken') // ✅ 토큰 가져오기
 
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
@@ -59,10 +58,25 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
       setInputValue('')
 
       try {
-        const response = await axios.post('http://localhost:8000/controller', {
-          user: 1,
-          content: inputValue.trim(),
-        })
+        const userId = localStorage.getItem('userId')
+        const token = localStorage.getItem('accessToken')
+
+        if (!userId || !token) {
+          console.error('User ID or Token is missing.')
+          setIsLoading(false)
+          return
+        }
+
+        const response = await axios.post(
+          'http://localhost:8000/controller',
+          {
+            user: userId, // ✅ 기존 user_id: 1 제거하고 로그인한 유저 ID 반영
+            content: inputValue.trim(),
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }, // ✅ 인증 추가
+          },
+        )
 
         console.log('API Response:', response.data)
 
@@ -109,55 +123,73 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
           console.error('Request Error:', error.message)
         }
       } finally {
-        setIsLoading(true)
+        setIsLoading(false) // ✅ 기존 코드 유지
       }
     }
   }
 
   const handleConfirm = async () => {
-    console.log('Confirm Button Clicked')
+    console.log('✅ Confirm 버튼 클릭됨')
 
     if (!selectedNodeId || selectedCategories.length === 0) {
-      console.error('No node selected or no category selected.')
+      console.error('❌ 노드 선택 안 됨 or 카테고리 선택 안 됨')
+      return
+    }
+
+    const userId = localStorage.getItem('userId')
+    const token = localStorage.getItem('accessToken')
+
+    if (!userId || !token) {
+      console.error('❌ User ID 또는 Token 없음. API 요청 중단')
+      return
+    }
+
+    // ✅ 현재 선택된 카테고리를 기반으로 relation_type_id 찾기
+    const relationTypeIds = selectedCategories
+      .map((categoryName) => {
+        const category = categories.find((c) => c.name === categoryName)
+        return category ? category.id : null // ✅ ID가 존재하면 반환, 없으면 null
+      })
+      .filter((id): id is number => id !== null) // ✅ null 값 제거
+
+    console.log('📡 서버로 보낼 relationTypeIds:', relationTypeIds)
+
+    if (relationTypeIds.length === 0) {
+      console.error('❌ 유효한 relationTypeIds 없음')
       return
     }
 
     try {
-      // ✅ 선택한 카테고리 이름을 ID로 변환
-      const relationTypeIds = selectedCategories
-        .map((categoryName) => categories.find((c) => c.name === categoryName)?.id)
-        .filter((id): id is number => id !== undefined) // ✅ undefined 제거
-
-      if (relationTypeIds.length === 0) {
-        console.error('Invalid categories:', selectedCategories)
-        return
-      }
-
       for (const relationTypeId of relationTypeIds) {
-        await axios.post('http://localhost:8000/relations/user-node-relations/create', {
-          user_id: 1, // TODO: 실제 로그인된 사용자 ID로 변경
-          node_id: selectedNodeId,
-          relation_type_id: relationTypeId, // ✅ API에서 받은 relation_type_id 사용
-        })
+        console.log(`📌 API 요청: 노드 ${selectedNodeId}, 관계 ID ${relationTypeId}`)
+
+        await axios.post(
+          'http://localhost:8000/relations/user-node-relations/create',
+          {
+            user_id: userId,
+            node_id: selectedNodeId,
+            relation_type_id: relationTypeId,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }, // ✅ 인증 추가
+          },
+        )
       }
 
+      console.log('✅ 관계 추가 성공!')
       handleClose()
       window.location.reload()
     } catch (error: any) {
-      console.error('Error sending relation data:', error.message)
+      console.error('❌ 관계 추가 중 오류 발생:', error.response?.data || error.message)
     }
   }
 
   useEffect(() => {
     console.log('isLoading changed:', isLoading)
-    if (isLoading) {
-      const timeout = setTimeout(() => {
-        console.log('Loading Timeout Reached')
-        setIsLoading(false)
-        setIsExpanded(true)
-        setAnimationActive(false)
-      }, 5000)
-      return () => clearTimeout(timeout)
+    if (!isLoading) {
+      console.log('✅ isLoading이 false → isExpanded true로 변경')
+      setIsExpanded(true)
+      setAnimationActive(false)
     }
   }, [isLoading])
 
@@ -188,18 +220,62 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 
   const handleCategorySelect = (category: string) => {
     console.log('Category Selected:', category)
-  
-    setSelectedCategories((prevSelected) =>
-      prevSelected.includes(category)
-        ? prevSelected.filter((c) => c !== category) // ✅ 이미 선택된 경우 해제
-        : [...prevSelected, category] // ✅ 선택되지 않은 경우 추가
+
+    setSelectedCategories(
+      (prevSelected) =>
+        prevSelected.includes(category)
+          ? prevSelected.filter((c) => c !== category) // ✅ 이미 선택된 경우 해제
+          : [...prevSelected, category], // ✅ 선택되지 않은 경우 추가
     )
   }
-  
-  const handleCategoryAdd = (newCategory: string) => {
-    console.log('New Category Added:', newCategory)
-    setCategories((prevCategories) => [...prevCategories, { id: -1, name: newCategory }])
-    setSelectedCategories([])
+
+  const handleCategoryAdd = async (newCategory: string) => {
+    if (newCategory.trim() === '') return
+
+    const userId = localStorage.getItem('userId')
+    const token = localStorage.getItem('accessToken')
+
+    console.log('✅ 현재 로그인한 User ID:', userId)
+    console.log('✅ 현재 Access Token:', token)
+
+    if (!userId || !token) {
+      console.error('❌ User ID 또는 Token 없음. API 요청 중단')
+      return
+    }
+
+    const categoryData = {
+      user_id: userId, // ✅ 로그인한 유저 ID 반영
+      node_id: selectedNodeId, // ✅ 선택된 노드 ID 반영
+      name: newCategory.trim(),
+    }
+
+    console.log('📡 서버로 전송할 데이터:', categoryData)
+
+    try {
+      const response = await axios.post('http://localhost:8000/relations/types/create', categoryData, { headers: { Authorization: `Bearer ${token}` } })
+
+      console.log('✅ 카테고리 추가 성공:', response.data)
+
+      const newCategoryId = response.data?.relation_type_id // 서버에서 반환한 relation_type_id
+
+      if (!newCategoryId) {
+        console.error('❌ 서버에서 relation_type_id를 반환하지 않음')
+        return
+      }
+
+      console.log(`✅ 새 카테고리 ID: ${newCategoryId}`)
+
+      // ✅ 서버에서 받은 ID로 상태 업데이트
+      setCategories((prevCategories) => [...prevCategories, { id: newCategoryId, name: newCategory.trim() }])
+
+      // ✅ 새로 추가한 카테고리를 선택한 상태로 유지
+      setSelectedCategories((prevSelected) => [...prevSelected, newCategory.trim()])
+
+      newCategoryId('')
+      setIsInputVisible(false)
+    } catch (error: any) {
+      console.error('❌ 카테고리 추가 중 오류 발생:', error.response?.data || error.message)
+    }
   }
 
   return (
@@ -270,13 +346,13 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-center w-full gap-4 mt-20">
-                  <CategoryBox
-                    categories={Array.from(new Set(categories.map((c) => c.name)))}
-                    selectedCategories={selectedCategories}
-                    onCategoriesSelect={(newCategories) => setSelectedCategories(newCategories)} // ✅ 배열을 직접 전달하도록 수정
-                    onCategoryAdd={handleCategoryAdd}
-                    currentNodeId={selectedNodeId}
-                  />
+                    <CategoryBox
+                      categories={Array.from(new Set(categories.map((c) => c.name)))}
+                      selectedCategories={selectedCategories}
+                      onCategoriesSelect={(newCategories) => setSelectedCategories(newCategories)} // ✅ 배열을 직접 전달하도록 수정
+                      onCategoryAdd={handleCategoryAdd}
+                      currentNodeId={selectedNodeId}
+                    />
                   </div>
                   <div className="flex items-center justify-center mt-10 text-lg text-blue-400 cursor-pointer" onClick={handleConfirm}>
                     확인
@@ -311,3 +387,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
 }
 
 export default Typing
+function setIsInputVisible(arg0: boolean) {
+  throw new Error('Function not implemented.')
+}
+
