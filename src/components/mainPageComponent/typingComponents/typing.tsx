@@ -70,21 +70,59 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         const response = await axios.post(
           'http://localhost:8000/controller',
           {
-            user: userId, // ✅ 기존 user_id: 1 제거하고 로그인한 유저 ID 반영
+            user: userId,
             content: inputValue.trim(),
           },
           {
-            headers: { Authorization: `Bearer ${token}` }, // ✅ 인증 추가
+            headers: { Authorization: `Bearer ${token}` },
           },
         )
 
-        console.log('API Response:', response.data)
+        console.log('✅ API Response:', response.data) // 서버 응답 전체 확인
 
+        type RelationType = {
+          relation_type_id: number
+          name: string
+        }
+
+        type CategoryResponse = {
+          category: RelationType[][]
+        }
+
+        // ✅ category 필드에서 relation_type_id와 name 가져오기
+        const categoryData: CategoryResponse = response.data
+        const relationTypes: RelationType[][] = categoryData.category || []
+
+        console.log('📌 관계 유형 리스트:', relationTypes) // 콘솔 확인
+
+        if (relationTypes.length > 0) {
+          // ✅ relation_type_id와 name을 올바르게 매핑
+          const extractedCategories = relationTypes
+            .map((item: any) => ({
+              id: item[0]?.relation_type_id, // 첫 번째 객체에서 relation_type_id 가져오기
+              name: item[1]?.name, // 두 번째 객체에서 name 가져오기
+            }))
+            .filter((category) => category.id && category.name) // ✅ 유효한 값만 필터링
+
+          console.log('🟢 변환된 카테고리:', extractedCategories)
+
+          // ✅ 기존 categories에 relation_types 추가
+          const updatedCategories = [...categories, ...extractedCategories]
+
+          // ✅ 중복 제거
+          const uniqueCategories = Array.from(new Map(updatedCategories.map((c) => [c.id, c])).values())
+
+          setCategories(uniqueCategories)
+          setSelectedCategories(relationTypes.flat().map((item: RelationType) => item.name))
+        }
+
+        // ✅ 기존 로직 유지 (노드, 프로필 추가 등)
         const createdAt = response.data?.write?.data?.created_at || 'No Time'
         const name = response.data?.nodes?.group1?.[0]?.name || 'Unknown Name'
         const content = response.data?.write?.data?.content || 'No Content'
 
         console.log('Extracted Data:', { createdAt, name, content })
+
         const nodes = response.data?.nodes || {}
         const updatedProfiles: { id: string; name: string; icon: string }[] = []
 
@@ -123,7 +161,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
           console.error('Request Error:', error.message)
         }
       } finally {
-        setIsLoading(false) // ✅ 기존 코드 유지
+        setIsLoading(false)
       }
     }
   }
@@ -390,4 +428,3 @@ export default Typing
 function setIsInputVisible(arg0: boolean) {
   throw new Error('Function not implemented.')
 }
-
