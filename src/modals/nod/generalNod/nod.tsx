@@ -51,7 +51,7 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
           try {
             console.log(`📡 관계 유형 요청: ${id}`)
 
-            const response = await axios.get(`http://localhost:8000/relations/types/${id}`, {
+            const response = await axios.get(`https://api.link-in.site/relations/types/${id}`, {
               headers: { Authorization: `Bearer ${token}` }, // ✅ 인증 추가
             })
 
@@ -87,7 +87,7 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
     try {
       console.log(`🟡 메모 데이터 요청 시작 (node_id: ${node.node_id})`)
 
-      const response = await axios.get(`http://localhost:8000/memos/memoListByUser/${node.node_id}`, {
+      const response = await axios.get(`https://api.link-in.site/memos/memoListByUser/${node.node_id}`, {
         headers: { Authorization: `Bearer ${token}` }, // ✅ 인증 추가
       })
 

@@ -11,7 +11,7 @@ const ProfileCard: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/node');
+        const response = await axios.get('https://api.link-in.site/node');
         const dataWithDefaultImages = response.data.map((item: any) => ({
           ...item,
           node_img: item.node_img || generalP, // 기본 이미지 설정

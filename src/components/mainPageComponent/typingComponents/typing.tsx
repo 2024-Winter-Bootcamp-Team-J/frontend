@@ -29,7 +29,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/relations/types')
+        const response = await axios.get('https://api.link-in.site/relations/types')
         console.log('카테고리 API 응답:', response.data)
 
         const categoryList = response.data.map((item: { relation_type_id: number; name: string }) => ({
@@ -46,7 +46,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
     fetchCategories()
   }, [])
 
-  const token = localStorage.getItem('accessToken') // ✅ 토큰 가져오기
+
 
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
@@ -58,12 +58,25 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
       setInputValue('')
 
       try {
-        const userId = localStorage.getItem('userId')
+        const userId = Number(localStorage.getItem('userId'))
+        console.log('✅ 현재 로그인한 User ID:', userId)
         const token = localStorage.getItem('accessToken')
 
         if (!userId || !token) {
           console.error('User ID or Token is missing.')
           setIsLoading(false)
+          return
+        }
+        const requestData = {
+          user_id: Number(userId), // API에 맞게 수정
+          content: inputValue.trim(),
+        }
+
+        console.log('📡 [API 요청 시작] 전송 데이터:', requestData)
+
+        if (!token) {
+          console.error('❌ Access Token이 존재하지 않음. API 요청 중단')
+          alert('인증이 만료되었습니다. 다시 로그인하세요.')
           return
         }
 
@@ -74,7 +87,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
             content: inputValue.trim(),
           },
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
           },
         )
 
@@ -174,7 +187,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
       return
     }
 
-    const userId = localStorage.getItem('userId')
+    const userId = Number(localStorage.getItem('userId'))
     const token = localStorage.getItem('accessToken')
 
     if (!userId || !token) {
@@ -202,7 +215,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
         console.log(`📌 API 요청: 노드 ${selectedNodeId}, 관계 ID ${relationTypeId}`)
 
         await axios.post(
-          'http://localhost:8000/relations/user-node-relations/create',
+          'https://api.link-in.site/relations/user-node-relations/create',
           {
             user_id: userId,
             node_id: selectedNodeId,
@@ -290,7 +303,7 @@ const Typing: React.FC<TypingProps> = ({ isCollapsed, addLog }) => {
     console.log('📡 서버로 전송할 데이터:', categoryData)
 
     try {
-      const response = await axios.post('http://localhost:8000/relations/types/create', categoryData, { headers: { Authorization: `Bearer ${token}` } })
+      const response = await axios.post('https://api.link-in.site/relations/types/create', categoryData, { headers: { Authorization: `Bearer ${token}` } })
 
       console.log('✅ 카테고리 추가 성공:', response.data)
 

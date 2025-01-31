@@ -51,7 +51,7 @@ const D3Canvas: React.FC<D3CanvasProps> = ({ selectedCategory }) => {
     const fetchData = async () => {
       try {
         console.log('📡 관계 유형 데이터 요청 시작')
-        const relationTypesResponse = await axios.get('http://localhost:8000/relations/types', {
+        const relationTypesResponse = await axios.get('https://api.link-in.site/relations/types', {
           headers: { Authorization: `Bearer ${token}` },
           params: { user_id: userId },
         })
@@ -64,7 +64,7 @@ const D3Canvas: React.FC<D3CanvasProps> = ({ selectedCategory }) => {
         console.log('📌 관계 유형 데이터:', types)
 
         console.log('📡 노드 데이터 요청 시작 (user_id:', userId, ')')
-        const nodesResponse = await axios.get('http://localhost:8000/node', {
+        const nodesResponse = await axios.get('https://api.link-in.site/node', {
           headers: { Authorization: `Bearer ${token}` },
           params: { user_id: userId }, // ✅ user_id 추가하여 해당 유저의 노드만 가져오기
         })
