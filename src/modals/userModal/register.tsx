@@ -103,6 +103,7 @@ const Register: React.FC<RegisterProps> = ({ onClose, openLoginModal }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="password"
+              type="password"
               className="w-full h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 text-white shadow-inner"
             />
 
@@ -111,6 +112,7 @@ const Register: React.FC<RegisterProps> = ({ onClose, openLoginModal }) => {
               value={repeatPassword}
               onChange={(e) => setRepeatPassword(e.target.value)}
               placeholder="repeat password"
+              type="password"
               className="w-full h-[40px] p-4 rounded-lg bg-customColor2 focus:outline-none focus:ring focus:ring-blue-300 text-white shadow-inner"
             />
 

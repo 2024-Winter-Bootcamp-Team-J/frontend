@@ -14,7 +14,7 @@ type Log = {
 };
 
 const MainPage: React.FC = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [logs, setLogs] = useState<Log[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('전체'); // ✅ 추가됨
 
