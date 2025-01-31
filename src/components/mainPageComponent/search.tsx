@@ -34,7 +34,7 @@ const Search: React.FC = () => {
     setLoading(true)
     try {
       console.log(`📡 검색 요청: query="${searchQuery}"`)
-      const response = await axios.get(`http://localhost:8000/search`, {
+      const response = await axios.get(`https://api.link-in.site/search`, {
         params: { query: searchQuery },
         headers: {
           Authorization: `Bearer ${token}`, // ✅ JWT 인증 헤더 추가

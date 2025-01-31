@@ -15,7 +15,7 @@ const Group: React.FC<GroupProps> = ({ isCollapsed, onCategorySelect }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/relations/types');
+        const response = await axios.get('https://api.link-in.site/relations/types');
         const categories = response.data.map((item: any) => ({ id: item.relation_type_id, name: item.name }));
         setGroupItems([{ id: -1, name: '전체' }, ...categories]);
       } catch (error) {

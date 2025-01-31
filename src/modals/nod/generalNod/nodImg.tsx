@@ -39,7 +39,7 @@ const NodImg: React.FC<NodImgProps> = ({ nodeImg, nodeId, onImageUpload }) => {
       try {
         console.log('🚀 이미지 업로드 요청 시작...')
         const response = await axios.post(
-          'http://localhost:8000/node/add-image', // API URL
+          'https://api.link-in.site/node/add-image', // API URL
           formData,
           {
             headers: {

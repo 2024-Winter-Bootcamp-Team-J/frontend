@@ -44,7 +44,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories = [], selectedCate
     try {
       setIsSubmitting(true)
       const response = await axios.post(
-        'http://localhost:8000/relations/types/create',
+        'https://api.link-in.site/relations/types/create',
         categoryData,
         { headers: { Authorization: `Bearer ${token}` } }, // ✅ 인증 추가
       )
