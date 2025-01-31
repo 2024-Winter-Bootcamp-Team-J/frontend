@@ -30,7 +30,7 @@ const Login: React.FC<LoginProps> = ({ onClose, onOpenRegister }) => {
 
     try {
 
-      const response = await axios.post('http://localhost:8000/users/login', { email, password })
+      const response = await axios.post('https://api.link-in.site/users/login', { email, password })
 
       console.log('🟢 서버 응답:', response.data) // ✅ 서버 응답 데이터 출력
 
