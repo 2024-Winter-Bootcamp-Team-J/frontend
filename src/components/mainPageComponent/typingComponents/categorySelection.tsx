@@ -22,45 +22,56 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories = [], selectedCate
       return
     }
 
-    const categoryData = {
-      user_id: 1, // 예제 사용자 ID
-      node_id: currentNodeId, // 선택된 노드 ID
-      name: newCategory.trim(),
-      is_default: categories.includes(newCategory.trim()),
-    }
+    const userId = localStorage.getItem('userId')
+    const token = localStorage.getItem('accessToken')
 
-    console.log('Request Data:', categoryData) // 디버깅: 서버에 보낼 데이터
+    console.log('✅ 현재 로그인한 User ID:', userId)
+    console.log('✅ 현재 Access Token:', token)
 
-    // is_default가 true면 요청 차단
-    if (categoryData.is_default) {
-      alert('이미 존재하는 카테고리입니다') // 경고 메시지 표시
-      setNewCategory('') // 입력 필드 초기화
-      setIsInputVisible(false) // 입력 필드 숨기기
+    if (!userId || !token) {
+      console.error('❌ User ID or Token is missing. API 요청 중단')
       return
     }
 
+    const categoryData = {
+      user_id: userId, // ✅ 로그인한 유저 ID 반영
+      node_id: currentNodeId,
+      name: newCategory.trim(),
+    }
+
+    console.log('📡 서버로 전송할 데이터:', categoryData) // 디버깅
+
     try {
       setIsSubmitting(true)
-      const response = await axios.post('http://localhost:8000/relations/types/create', categoryData)
+      const response = await axios.post(
+        'http://localhost:8000/relations/types/create',
+        categoryData,
+        { headers: { Authorization: `Bearer ${token}` } }, // ✅ 인증 추가
+      )
 
-      console.log('Category added successfully', response.data)
+      console.log('✅ 카테고리 추가 성공:', response.data)
 
-      onCategoryAdd(newCategory.trim()) // 부모 컴포넌트로 새 카테고리 전달
-      setNewCategory('') // 입력 필드 초기화
-      setIsInputVisible(false) // 입력 필드 숨기기
-    } catch (error) {
-      console.error('Error adding category:', error)
+      const createdCategory = {
+        id: response.data.relation_type_id, // 서버에서 받은 실제 ID
+        name: response.data.name, // 서버에서 받은 카테고리 이름
+      };
+      
+      onCategoryAdd(createdCategory.name) // ✅ 기존 기능 유지
+      setNewCategory('')
+      setIsInputVisible(false)
+    } catch (error: any) {
+      console.error('❌ 카테고리 추가 중 오류 발생:', error.response?.data || error.message)
     } finally {
-      setIsSubmitting(false) // 로딩 상태 초기화
+      setIsSubmitting(false)
     }
   }
 
   const handleCategoryClick = (category: string) => {
     if (selectedCategories.includes(category)) {
-      // 이미 선택된 경우 -> 해제
+      // 이미 선택된 경우 → 해제
       onCategoriesSelect(selectedCategories.filter((c) => c !== category))
     } else {
-      // 새로 선택된 경우 -> 추가
+      // 새로 선택된 경우 → 추가
       onCategoriesSelect([...selectedCategories, category])
     }
   }
@@ -86,9 +97,7 @@ const CategoryBox: React.FC<CategoryBoxProps> = ({ categories = [], selectedCate
             >
               {category}
             </div>
-            {selectedCategories.includes(category) && (
-              <div className="absolute inset-0 bg-blue-500 rounded-lg blur-md" style={{ filter: 'blur(5px)' }} />
-            )}
+            {selectedCategories.includes(category) && <div className="absolute inset-0 bg-blue-500 rounded-lg blur-md" style={{ filter: 'blur(5px)' }} />}
           </div>
         ))}
 

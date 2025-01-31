@@ -1,136 +1,153 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import NodeMemo from './nodMemo';
-import NodImg from './nodImg';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import NodeMemo from './nodMemo'
+import NodImg from './nodImg'
 import '../../../index.css'
 
 interface NodProps {
   node: {
-    id: string;
-    node_img?: string;
-    relation_type_id?: number[];
-    name?: string;
-    memo?: string;
-    time?: string;
-    node_id?: number;
-  } | null;
-  onClose: () => void;
+    id: string
+    node_img?: string
+    relation_type_id?: number[]
+    name?: string
+    memo?: string
+    time?: string
+    node_id?: number
+  } | null
+  onClose: () => void
 }
 
 const Nod: React.FC<NodProps> = ({ node, onClose }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [nodeImg, setNodeImg] = useState<string | undefined>(node?.node_img);
-  const [memos, setMemos] = useState<{ memo_id: number; content: string; created_at: string }[]>([]);
-  const [relationTypes, setRelationTypes] = useState<{ [key: number]: string }>({});
+  const [isVisible, setIsVisible] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(true)
+  const [nodeImg, setNodeImg] = useState<string | undefined>(node?.node_img)
+  const [memos, setMemos] = useState<{ memo_id: number; content: string; created_at: string }[]>([])
+  const [relationTypes, setRelationTypes] = useState<{ [key: number]: string }>({})
 
-  // ✅ relation_type_id 별 관계명 가져오기 (중복 제거)
-  useEffect(() => {
-    const fetchRelationTypes = async () => {
-      if (!node?.relation_type_id || node.relation_type_id.length === 0) {
-        console.log('❌ 관계 유형 ID 없음');
-        return;
-      }
+  // ✅ 현재 로그인한 Token 가져오기
+  const token = localStorage.getItem('accessToken')
 
-      try {
-        const typeMap: { [key: number]: string } = {};
+  console.log('✅ 현재 Access Token:', token)
 
-        await Promise.all(
-          node.relation_type_id.map(async (id) => {
-            try {
-              const response = await axios.get(`http://localhost:8000/relations/types/${id}`);
-              console.log(`📌 관계 유형 응답 (${id}):`, response.data);
+  if (!token) {
+    console.error('❌ Token이 없음. API 요청 중단')
+    return null
+  }
 
-              if (response.data && response.data.name) {
-                typeMap[id] = response.data.name;
-              } else {
-                console.warn(`⚠️ ID ${id} 관계명 없음, 기본값 사용`);
-                typeMap[id] = '알 수 없음';
-              }
-            } catch (error) {
-              console.error(`❌ ID ${id} 관계 유형 요청 실패:`, error);
-              typeMap[id] = '에러 발생';
-            }
-          })
-        );
-
-        console.log('📌 최종 관계 유형:', typeMap);
-        setRelationTypes(typeMap);
-      } catch (error) {
-        console.error('❌ 관계 유형 데이터 가져오기 실패:', error);
-      }
-    };
-
-    fetchRelationTypes();
-  }, [node?.relation_type_id]);
-
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, []);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  useEffect(() => {
-    if (node?.node_id) {
-      const fetchMemos = async () => {
-        try {
-          const url = `http://localhost:8000/memos/memoListByUser/${node.node_id}`;
-          const response = await axios.get(url);
-          setMemos(response.data);
-        } catch (error) {
-          console.error('메모 데이터를 가져오는 중 오류 발생:', error);
-        }
-      };
-      fetchMemos();
+  // ✅ relation_type_id 별 관계명 가져오기
+  const fetchRelationTypes = async () => {
+    if (!node?.relation_type_id || node.relation_type_id.length === 0) {
+      console.log('❌ 관계 유형 ID 없음')
+      return
     }
-  }, [node?.node_id]);
+
+    try {
+      console.log(`🟡 관계 유형 데이터 요청 시작`)
+
+      const typeMap: { [key: number]: string } = {}
+
+      await Promise.all(
+        node.relation_type_id.map(async (id) => {
+          try {
+            console.log(`📡 관계 유형 요청: ${id}`)
+
+            const response = await axios.get(`http://localhost:8000/relations/types/${id}`, {
+              headers: { Authorization: `Bearer ${token}` }, // ✅ 인증 추가
+            })
+
+            console.log(`📌 관계 유형 응답 (${id}):`, response.data)
+
+            if (response.data && response.data.name) {
+              typeMap[id] = response.data.name
+            } else {
+              console.warn(`⚠️ ID ${id} 관계명 없음, 기본값 사용`)
+              typeMap[id] = '알 수 없음'
+            }
+          } catch (error) {
+            console.error(`❌ ID ${id} 관계 유형 요청 실패:`, error)
+            typeMap[id] = '에러 발생'
+          }
+        }),
+      )
+
+      console.log('📌 최종 관계 유형:', typeMap)
+      setRelationTypes(typeMap)
+    } catch (error) {
+      console.error('❌ 관계 유형 데이터 가져오기 실패:', error)
+    }
+  }
+
+  // ✅ node_id를 기반으로 메모 데이터 가져오기
+  const fetchMemos = async () => {
+    if (!node?.node_id) {
+      console.error('❌ Node ID가 없음')
+      return
+    }
+
+    try {
+      console.log(`🟡 메모 데이터 요청 시작 (node_id: ${node.node_id})`)
+
+      const response = await axios.get(`http://localhost:8000/memos/memoListByUser/${node.node_id}`, {
+        headers: { Authorization: `Bearer ${token}` }, // ✅ 인증 추가
+      })
+
+      console.log('📌 가져온 메모 데이터:', response.data)
+
+      setMemos(response.data)
+    } catch (error) {
+      console.error('❌ 메모 데이터를 가져오는 중 오류 발생:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchRelationTypes()
+    fetchMemos()
+  }, [node?.relation_type_id, node?.node_id])
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   const handleImageUpdate = (newImageUrl: string) => {
-    setNodeImg(newImageUrl);
-  };
+    setNodeImg(newImageUrl)
+  }
 
   const handleClose = (): void => {
-    window.location.reload();
-    setIsVisible(false);
+    window.location.reload()
+    setIsVisible(false)
     setTimeout(() => {
-      onClose();
-    }, 300);
-  };
+      onClose()
+    }, 300)
+  }
 
   const handleExpand = (): void => {
-    setIsExpanded(false);
-  };
+    setIsExpanded(false)
+  }
 
   const handleShrink = (): void => {
-    setIsExpanded(true);
-  };
+    setIsExpanded(true)
+  }
 
-  if (!node) return null;
+  if (!node) return null
 
   // ✅ 중복 제거된 관계 유형 목록 생성
-  const uniqueCategories = Array.from(new Set(Object.values(relationTypes)));
+  const uniqueCategories = Array.from(new Set(Object.values(relationTypes)))
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xl transition-opacity duration-300 ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-    >
-      <div
-        className={`relative rounded-[30px] flex flex-col items-center py-4 px-10 transition-all duration-300 ${
-          isExpanded ? 'w-[500px] h-[700px] bg-nodColor' : 'w-screen h-screen rounded-none'
-        }`}
-      >
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xl transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`relative rounded-[30px] flex flex-col items-center py-4 px-10 transition-all duration-300 ${isExpanded ? 'w-[500px] h-[700px] bg-nodColor' : 'w-screen h-screen rounded-none'}`}>
         {/* 닫기 버튼 */}
         <button onClick={handleClose} className="absolute p-4 text-2xl text-white top-4 right-6 hover:scale-125">
           <img src="/src/assets/CloseButton.png" alt="Close" className="w-8 h-8" />
         </button>
-        
+
         {/* 확장/축소 버튼 */}
         {isExpanded ? (
           <button onClick={handleExpand} className="absolute p-4 text-white top-4 left-6 hover:scale-125">
@@ -162,17 +179,13 @@ const Nod: React.FC<NodProps> = ({ node, onClose }) => {
         </div>
 
         {/* 메모 목록 */}
-        <div className='w-full mt-6 text-3xl text-white border-b-2'>메모</div>
+        <div className="w-full mt-6 text-3xl text-white border-b-2">메모</div>
         <div className="flex flex-col w-full mt-6 mb-4 overflow-y-auto text-white transition-opacity duration-300 scrollbar-hidden">
-          {memos.length > 0 ? (
-            <NodeMemo memos={memos} />
-          ) : (
-            <div>No memos available</div>
-          )}
+          {memos.length > 0 ? <NodeMemo memos={memos} /> : <div>No memos available</div>}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Nod;
+export default Nod
